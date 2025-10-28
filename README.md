@@ -3,6 +3,11 @@ This guide helps you prepare for **iOS developer interviews** with practical Q&A
 
 ---
 
+## 🗂️ Table of Contents
+1. [MVC vs MVVM in Swift and SwiftUI](#mvc-vs-mvvm-in-swift-and-swiftui)
+2. [Struct vs Class in Swift](#struct-vs-class-in-swift)   
+---
+
 # 🧩 MVC vs MVVM in Swift and SwiftUI
 
 This guide explains the **difference between MVC and MVVM** architecture patterns in **UIKit (Storyboard)** and **SwiftUI**, with clean examples and visuals.
@@ -390,4 +395,192 @@ animal.move() // Animal can move
 “**Struct = data container, Enum = fixed options with cases.**”
 
 ---
+# 🧩 Swift Memory Management & Modifiers Guide
+
+This README provides a detailed explanation of **Memory Management (ARC)** and different **Modifiers in Swift**, essential for interview preparation and professional iOS development.
+
+---
+
+## 🗂️ Table of Contents
+1. [Memory Management (ARC)](#memory-management-arc)
+2. [View Modifiers (SwiftUI)](#view-modifier-swiftui)
+3. [Access Modifiers](#access-modifier)
+4. [Type Modifiers](#type-modifier)
+5. [Declaration Modifiers](#declaration-modifier)
+
+---
+
+## 🧩 Memory Management (ARC)
+
+**ARC (Automatic Reference Counting)** automatically manages memory by counting object references.
+
+### 🧠 Reference Types
+
+| Type | Description | Example Usage |
+|------|--------------|----------------|
+| **Strong** | Default reference; keeps object in memory as long as reference exists. | Regular variable reference |
+| **Weak** | Optional reference; does not keep object in memory; becomes `nil` automatically when object deallocates. | Use in delegates or parent-child references |
+| **Unowned** | Non-optional reference; does not keep object in memory; assumes object will never be nil during its lifetime. | Use when lifetime of reference is guaranteed |
+
+### 💡 Memory Safety
+- **Strong** can cause retain cycles.  
+- **Weak** and **Unowned** prevent retain cycles.
+
+### 🔧 Example
+```swift
+class Parent {
+    var children: [Child] = []
+}
+
+class Child {
+    weak var parent: Parent?        // Weak to avoid retain cycle
+    unowned let school: School      // Unowned when guaranteed to exist
+}
+```
+
+### ✅ Best Practices
+- Use **weak** for delegates and parent references.  
+- Use **unowned** only when you're certain the reference will never be `nil`.  
+- Be careful of **retain cycles** in closures.
+
+👉 **Quick hook:** “Strong owns, Weak doesn’t but optional, Unowned doesn’t and assumes non-nil.”
+
+---
+
+## 🎨 View Modifier (SwiftUI)
+
+These modify the **appearance or behavior of a view**.
+
+Examples:
+- `.font()`  
+- `.padding()`  
+- `.background(Color.blue)`  
+- `.onTapGesture { }`
+
+```swift
+Text("Hello, SwiftUI!")
+    .font(.title)
+    .padding()
+    .background(Color.yellow)
+    .onTapGesture {
+        print("Tapped!")
+    }
+```
+
+---
+
+## 🔐 Access Modifier
+
+Define **where** your class, struct, or property can be accessed.
+
+| Modifier | Access Scope | Notes |
+|-----------|---------------|-------|
+| **private** | Within its class or struct | Most restrictive |
+| **fileprivate** | Within same Swift file | Useful for helper extensions |
+| **internal** | Default (within same module) | Default level |
+| **public** | Accessible from other modules | Can’t be subclassed outside |
+| **open** | Accessible & subclassable from anywhere | Frameworks/API use this |
+
+```swift
+class BankAccount {
+    private var balance: Double = 0.0
+
+    public func deposit(amount: Double) {
+        if amount > 0 {
+            balance += amount
+        }
+    }
+}
+
+class TransactionManager {
+    var description: String = "Transaction"
+}
+```
+
+---
+
+## ⚙️ Type Modifier
+
+Affect **how a type behaves** or how its members are accessed.
+
+| Modifier | Description |
+|-----------|--------------|
+| **static** | Belongs to type, not instance. Cannot be overridden. |
+| **class** | Type-level method/property that can be overridden. |
+
+```swift
+class Animal {
+    static func category() -> String {
+        return "Mammal"
+    }
+    
+    class func sound() -> String {
+        return "Generic Sound"
+    }
+}
+```
+
+---
+
+## 🧾 Declaration Modifier
+
+Change how declarations behave, their visibility, or lifecycle.
+
+| Modifier | Description |
+|-----------|--------------|
+| **open** | Can be subclassed/overridden anywhere |
+| **public** | Usable anywhere but not overridable outside module |
+| **internal** | Default access; available in same module |
+| **fileprivate** | Access within same file |
+| **private** | Access within same class/struct |
+| **final** | Prevent subclassing/overriding |
+| **static** | Belongs to type, not instance |
+| **class** | Allows overriding by subclass |
+| **mutating** | Allows struct/enum methods to modify self |
+| **lazy** | Property created only on first use |
+| **override** | Replace superclass implementation |
+| **required** | Subclasses must implement initializer |
+| **convenience** | Secondary initializer calling designated one |
+| **optional** | Protocol method/property may be unimplemented |
+| **inout** | Allows function to modify passed variable directly |
+| **dynamic** | Enables Objective-C runtime method dispatch |
+| **@MainActor** | Runs code on main thread |
+| **@objc** | Exposes Swift to Objective-C runtime |
+| **@discardableResult** | Ignores unused return value warnings |
+| **@available** | Limits availability per OS version |
+| **@nonobjc** | Hides method from Objective-C runtime |
+
+### Example
+```swift
+final class Example {
+    lazy var data = [1, 2, 3]
+
+    @discardableResult
+    func add(_ num: Int) -> [Int] {
+        data.append(num)
+        return data
+    }
+}
+```
+
+---
+
+## 🧠 Summary
+
+| Concept | Description |
+|----------|--------------|
+| **Strong** | Owns memory |
+| **Weak** | Non-owning, optional |
+| **Unowned** | Non-owning, non-optional |
+| **Access Modifiers** | Control visibility |
+| **Declaration Modifiers** | Control behavior |
+| **Type Modifiers** | Change static/class behavior |
+
+👉 **Quick Memory Tip:**  
+“**Strong owns**, **Weak doesn’t (optional)**, **Unowned doesn’t (non-optional)**.”
+
+
+
+
+
 
