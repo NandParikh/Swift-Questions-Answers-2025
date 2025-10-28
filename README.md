@@ -709,6 +709,8 @@ struct LoginField: View {
     }
 }
 ```
+<img width="492" height="462" alt="Screenshot 2025-10-28 at 7 59 24 PM" src="https://github.com/user-attachments/assets/c325f214-d837-47ae-b9f7-b8eeeb8b8a31" />
+
 
 ---
 
@@ -763,6 +765,8 @@ final class CounterViewModel: ObservableObject {
     }
 }
 ```
+
+<img width="631" height="530" alt="Screenshot 2025-10-28 at 7 54 11 PM" src="https://github.com/user-attachments/assets/16abee03-8ad7-4230-a6f0-80c96b5619f3" />
 
 ---
 
@@ -850,6 +854,7 @@ struct ThirdView: View {
     }
 }
 ```
+<img width="599" height="379" alt="Screenshot 2025-10-28 at 8 00 59 PM" src="https://github.com/user-attachments/assets/6bd52650-6a9d-4272-a893-431adf8f7db9" />
 
 ---
 
@@ -869,6 +874,12 @@ struct ThirdView: View {
 “State stores, Binding shares, StateObject owns, ObservedObject watches, EnvironmentObject spreads.”
 
 
+<img width="521" height="346" alt="Screenshot 2025-10-28 at 8 03 11 PM" src="https://github.com/user-attachments/assets/05042398-2c82-41f1-9f64-72b49393b2e6" />
 
+<img width="410" height="422" alt="Screenshot 2025-10-28 at 8 03 34 PM" src="https://github.com/user-attachments/assets/1a90863a-812b-468a-ab29-2b22d8b2d290" />
 
+<img width="597" height="460" alt="Screenshot 2025-10-28 at 8 04 08 PM" src="https://github.com/user-attachments/assets/fad9c77e-f93d-4f78-9fca-7d1e2103d1f9" />
 
+<img width="482" height="576" alt="Screenshot 2025-10-28 at 8 04 25 PM" src="https://github.com/user-attachments/assets/8f6b969a-f509-45ee-83de-c52cd3fbed09" />
+
+<img width="611" height="204" alt="Screenshot 2025-10-28 at 8 04 52 PM" src="https://github.com/user-attachments/assets/4d982a87-1c0c-4389-8a86-eefb4f5c9362" />
