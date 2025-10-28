@@ -301,6 +301,9 @@ print(b.name) // Mike  // both reflect change
 - Use `super` to access parent methods.  
 - Can adopt **protocols**.  
 
+Example
+NSObject -> UIResponder -> UIView -> UIController -> UIButton
+
 #### Example:
 ```swift
 class Animal {
@@ -1394,4 +1397,185 @@ print(numbers) // [1, 2, 3, 4]
 - Xcode provides an integrated environment for **coding, debugging, and UI design**.
 - Swift is a **modern, safe, and concise language** ideal for iOS development.
 - Debugging and refactoring improve **app stability** and **code quality**.
+
+
+---
+## Key Features of Swift vs Objective-C
+---
+**Swift** offers several advantages over Objective-C:
+
+- ✅ Type safety – prevents type-related runtime errors.  
+- ✅ Optionals eliminate null pointer exceptions (common crash cause).  
+- ✅ Concise and readable syntax – faster development.  
+- ✅ Automatic memory management via ARC.  
+- ✅ Protocol-oriented programming – promotes modular, reusable code.  
+- ✅ Value types (structs, enums) – enhance performance.  
+- ✅ Playground support for live code testing.  
+- ✅ Bridging with Objective-C for mixed projects.  
+
+---
+## 2. Optionals in Swift
+---
+
+**Definition:** Optionals represent a variable that may or may not hold a value.  
+They help avoid null pointer exceptions by requiring safe unwrapping.
+
+```swift
+var name: String? = "John"
+if let unwrapped = name {
+    print(unwrapped) // Safely prints the value
+} else {
+    print("Value is nil")
+}
+```
+
+---
+## 3. iOS App Lifecycle & ViewController Lifecycle
+---
+
+### App Lifecycle States:
+- **Not Running** → App is closed.
+- **Inactive** → App is in foreground but not receiving input.
+- **Active** → App is running and receiving input.
+- **Background** → App is executing code in the background.
+- **Suspended** → App is in memory but not executing code.
+
+### Common Delegate Methods:
+- `application:didFinishLaunchingWithOptions` → App launch setup  
+- `applicationDidBecomeActive` → App becomes active  
+- `applicationWillEnterForeground` → Coming from background  
+
+### ViewController Lifecycle:
+`loadView` → `viewDidLoad` → `viewWillAppear` → `viewDidAppear` → `viewWillDisappear` → `viewDidDisappear` → `viewDidUnload`
+
+---
+## Passing Data Between ViewControllers
+---
+
+- **Segues (prepareForSegue)** → Forward data during navigation  
+- **Delegation pattern** → Backward communication using protocols  
+- **Notifications** → One-to-many communication  
+- **Singleton / Shared instances** → Global data access  
+- **Closures / Completion handlers** → Inline callback approach  
+- **UserDefaults** → For persistent, simple key-value data  
+- **Core Data / SQLite** → For complex persistent data  
+
+---
+## Loose vs Tight Coupling in iOS
+---
+
+### Tight Coupling Example
+When classes are directly dependent on each other:
+
+```swift
+class Engine {
+    func start() {
+        print("Engine started")
+    }
+}
+
+class Car {
+    let engine = Engine()
+    func start() {
+        engine.start()
+        print("Car started")
+    }
+}
+```
+
+**Advantages:**
+- Simple structure  
+- Good for small projects  
+
+**Disadvantages:**
+- Hard to scale or test  
+- Limited reusability  
+- Changes propagate through multiple classes  
+
+---
+
+### Loose Coupling Example
+Using abstraction or protocols to reduce dependencies:
+
+```swift
+protocol Engine {
+    func start()
+}
+
+class DieselEngine: Engine {
+    func start() {
+        print("Diesel engine started")
+    }
+}
+
+class Car {
+    var engine: Engine
+    init(engine: Engine) {
+        self.engine = engine
+    }
+    func start() {
+        engine.start()
+        print("Car started")
+    }
+}
+
+let dieselEngine = DieselEngine()
+let car = Car(engine: dieselEngine)
+car.start()
+```
+
+**Advantages:**
+- High flexibility and scalability  
+- Easier to test and maintain  
+
+**Disadvantages:**
+- Slightly more complex design  
+- Minor performance overhead  
+
+---
+## Frame vs Bounds
+---
+
+| Property | Description |
+|-----------|--------------|
+| **Frame** | Defines the view’s position and size relative to its **superview**. |
+| **Bounds** | Defines the view’s own coordinate system (content area). |
+
+**Example:**
+```swift
+print(view.frame)   // position in superview
+print(view.bounds)  // internal coordinate system
+```
+
+---
+## @objc vs @nonobjc
+---
+
+- **@objc** → Makes Swift methods/classes visible to Objective-C.  
+  Useful for interoperability and Core Data integration.  
+
+- **@nonobjc** → Prevents exposure to Objective-C runtime.  
+  Avoids naming conflicts and keeps Swift-only functions isolated.
+
+```swift
+@objc class MyObjCClass: NSObject {
+    @objc func accessibleInObjC() {}
+    @nonobjc func swiftOnlyMethod() {}
+}
+```
+
+---
+
+### ✅ Summary
+
+| Concept | Key Point |
+|----------|------------|
+| **Swift** | Type-safe, modern, performant language |
+| **Optionals** | Prevent null pointer crashes |
+| **Lifecycle** | App + ViewController stages |
+| **Data Transfer** | Delegation, closures, segues, etc. |
+| **Coupling** | Loose = flexible, Tight = simple |
+| **Frame vs Bounds** | External vs Internal coordinates |
+| **@objc/@nonobjc** | Swift-Objective-C interoperability control |
+
 
