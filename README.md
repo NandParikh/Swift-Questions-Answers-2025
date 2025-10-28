@@ -883,3 +883,144 @@ struct ThirdView: View {
 <img width="482" height="576" alt="Screenshot 2025-10-28 at 8 04 25 PM" src="https://github.com/user-attachments/assets/8f6b969a-f509-45ee-83de-c52cd3fbed09" />
 
 <img width="611" height="204" alt="Screenshot 2025-10-28 at 8 04 52 PM" src="https://github.com/user-attachments/assets/4d982a87-1c0c-4389-8a86-eefb4f5c9362" />
+
+
+
+---
+# 🧩 Clean Architecture, MVP, VIPER, and Singleton in Swift
+---
+## 🧱 What is Clean Architecture in Swift?
+Clean Architecture in iOS is about **separating the app into layers** so that business logic is independent of the UI or frameworks.
+
+### 📚 Main Layers:
+- **Entities:** Core models or business objects.
+- **Use Cases / Interactors:** Contain business rules or logic.
+- **Presentation:** Handles UI and user interaction.
+- **Infrastructure:** Manages external dependencies like networking or databases.
+
+### ✅ Benefits:
+- Modular and scalable code.
+- Easier unit testing.
+- Independent layers (changes in one layer don’t break others).
+- Better maintainability and reusability.
+
+---
+
+## 🧩 MVP (Model-View-Presenter)
+
+### Explanation:
+- **Model:** Holds data or business logic.
+- **View:** Displays the UI to the user.
+- **Presenter:** Acts as a mediator between View and Model, handling presentation logic.
+
+### Usage:
+MVP separates **UI from logic**, making the app easier to test and maintain.
+
+### Example:
+```swift
+protocol LoginView: AnyObject {
+    func showLoginSuccess()
+    func showLoginError()
+}
+
+class LoginPresenter {
+    weak var view: LoginView?
+    
+    init(view: LoginView) {
+        self.view = view
+    }
+    
+    func login(username: String, password: String) {
+        if username == "admin" && password == "1234" {
+            view?.showLoginSuccess()
+        } else {
+            view?.showLoginError()
+        }
+    }
+}
+```
+
+---
+
+## 🧠 VIPER (View-Interactor-Presenter-Entity-Router)
+
+### Explanation:
+VIPER architecture divides an app into five layers:
+- **View:** Handles UI and user interactions.
+- **Interactor:** Contains business logic and data handling.
+- **Presenter:** Formats data for the view.
+- **Entity:** Defines model objects.
+- **Router (Wireframe):** Handles navigation between screens.
+
+### Usage:
+Used for **large-scale apps** to keep code **modular, testable, and organized**.
+
+### Example Flow:
+```
+User Action → View → Presenter → Interactor → Entity → Presenter → View
+```
+
+---
+
+## 🧩 Singleton in Swift
+---
+
+A **Singleton** provides a single, shared instance of a class throughout the app.
+
+### When & Where to Use:
+Use Singleton for shared resources like:
+- Network Manager
+- User Session
+- App Settings
+- Database Manager
+
+### Example:
+```swift
+final class MyManager {
+    static let shared = MyManager()  // single shared instance
+    private init() {}               // prevents external instantiation
+    
+    func printMessage() {
+        print("Singleton instance accessed!")
+    }
+}
+
+// Usage
+MyManager.shared.printMessage()
+```
+
+### 🔍 Explanation:
+- `final` → prevents subclassing.
+- `static` → creates a single shared instance.
+- `private init()` → ensures no external instances are created.
+
+---
+
+## ✅ Advantages of Singleton:
+- Single global access point.
+- Saves memory by sharing one instance.
+- Useful for shared resources (e.g., configuration, logging, caching).
+
+## ⚠️ Disadvantages of Singleton:
+- Can lead to **tight coupling**.
+- Difficult to **mock in unit tests**.
+- May introduce **hidden dependencies**.
+- Harder to manage in **multi-threaded environments**.
+
+---
+
+### 🪄 Quick Summary
+| Concept | Purpose | Key Benefit |
+|----------|----------|--------------|
+| **Clean Architecture** | Layered separation | Independent, testable code |
+| **MVP** | UI logic separation | Easier testing |
+| **VIPER** | Modular design | Best for large projects |
+| **Singleton** | Shared instance | Centralized management |
+
+---
+
+**Author:** Tech Docs  
+**Language:** Swift  
+**Platform:** iOS  
+**Category:** Architecture & Design Patterns  
+
