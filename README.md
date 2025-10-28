@@ -639,5 +639,236 @@ let forced = name!
 Optionals make Swift safer and more predictable by handling `nil` values gracefully — preventing runtime crashes.
 
 
+---
+# 🧩 SwiftUI Data Flow
+
+SwiftUI provides several **property wrappers** to manage data flow between views.
+
+---
+
+## 🧠 Property Wrappers Overview
+
+| Wrapper | Purpose |
+|----------|----------|
+| `@State` | Local state within a view |
+| `@Binding` | Two-way connection to parent’s state |
+| `@StateObject` | Owns lifecycle of an ObservableObject |
+| `@ObservedObject` | External object that publishes changes |
+| `@EnvironmentObject` | Shared object across the view hierarchy |
+
+---
+
+## 🔹 @State
+
+When a property's value changes, SwiftUI **automatically refreshes the UI**.
+
+- Stores values that can change over time.
+- Refreshes dependent views automatically.
+
+```swift
+@State var count = 0
+
+var body: some View {
+    Button("Tap Count: \(count)") {
+        count += 1
+    }
+}
+```
+
+---
+
+## 🔹 @Binding
+
+Used to **create a two-way connection** between parent and child views.
+
+If a child view updates the value, it reflects in the parent as well.
+
+**Parent View:**
+
+```swift
+struct ContentView: View {
+    @State private var name: String = ""
+
+    var body: some View {
+        VStack {
+            LoginField(text: $name)
+            Text("Name is \(name)")
+        }.padding()
+    }
+}
+```
+
+**Child View:**
+
+```swift
+struct LoginField: View {
+    @Binding var text: String
+
+    var body: some View {
+        TextField("Enter Text", text: $text)
+    }
+}
+```
+
+---
+
+## 🔹 @StateObject vs @ObservedObject
+
+- `@StateObject` → Used when the **view owns** the data (persists value even when recreated).
+- `@ObservedObject` → Used when the **data is external** (recreates instance each time).
+
+```swift
+struct RandomNumberView: View {
+    @State var number: Int = 0
+
+    var body: some View {
+        VStack {
+            Text("Random number: \(number)")
+
+            Button("Generate Random Number") {
+                number = (0...1000).randomElement() ?? 0
+            }
+
+            Divider().padding()
+
+            ContentView()
+        }
+    }
+}
+
+struct ContentView: View {
+    @State var count: Int = 0
+    @ObservedObject var vm = CounterViewModel() // Not persistent
+
+//    @StateObject var vm = CounterViewModel() // Persistent
+
+    var body: some View {
+        VStack {
+            Text("State Count: \(count)")
+            Text("Observed Obj Count: \(vm.count)")
+
+            Button("Increment") {
+                count += 1
+                vm.increment()
+            }
+        }
+    }
+}
+
+final class CounterViewModel: ObservableObject {
+    @Published var count: Int = 0
+
+    func increment() {
+        count += 1
+    }
+}
+```
+
+---
+
+## 🔹 @EnvironmentObject
+
+Allows **shared data across all views** without manual passing.
+
+### Example
+
+**Main App:**
+
+```swift
+@main
+struct EnvironmentObjExampleApp: App {
+    @StateObject private var productVM = ProductViewModel()
+
+    var body: some Scene {
+        WindowGroup {
+            FirstView().environmentObject(productVM)
+        }
+    }
+}
+```
+
+**ViewModel:**
+
+```swift
+class ProductViewModel: ObservableObject {
+    @Published var productName = "Mac Mini"
+    @Published var productPrice = 80000.00
+}
+```
+
+**First View:**
+
+```swift
+struct FirstView: View {
+    @EnvironmentObject var productVM: ProductViewModel
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("Product: \(productVM.productName)")
+                Text("Price: \(productVM.productPrice)")
+
+                NavigationLink("Go to Second Screen") {
+                    SecondView()
+                }
+                NavigationLink("Go to Third Screen") {
+                    ThirdView()
+                }
+            }
+        }
+    }
+}
+```
+
+**Second View:**
+
+```swift
+struct SecondView: View {
+    @EnvironmentObject var productVM: ProductViewModel
+
+    var body: some View {
+        VStack {
+            TextField("Product Name", text: $productVM.productName)
+            TextField("Product Price", value: $productVM.productPrice, format: .number)
+            Text("Now: \(productVM.productName) - \(productVM.productPrice)")
+        }
+    }
+}
+```
+
+**Third View:**
+
+```swift
+struct ThirdView: View {
+    @EnvironmentObject var productVM: ProductViewModel
+
+    var body: some View {
+        VStack {
+            Text("Product: \(productVM.productName)")
+            Text("Price: $\(productVM.productPrice, specifier: "%.2f")")
+        }
+    }
+}
+```
+
+---
+
+## ✅ When to Use Which
+
+| Wrapper | Use Case |
+|----------|-----------|
+| `@State` | Simple local state in a single view |
+| `@Binding` | Two-way data sharing between parent-child |
+| `@StateObject` | Persistent state owned by a view |
+| `@ObservedObject` | Reusable external data model |
+| `@EnvironmentObject` | Global shared data (e.g., theme, user session) |
+
+---
+
+👉 **Quick Hook:**  
+“State stores, Binding shares, StateObject owns, ObservedObject watches, EnvironmentObject spreads.”
+
+
+
 
 
