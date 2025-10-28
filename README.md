@@ -1,14 +1,4 @@
-# Swift-Questions-Answers-2025
-This readme file contains Swift interview questions and answers.
-
----
-
-# 🚀 SwiftUI Interview Q&A Guide
-
-This repository contains **SwiftUI interview questions and answers** for senior iOS developers.
-
----
-## 🧩 Introduction
+# iOS Swift and Swift UI -Questions-Answers-2025
 This guide helps you prepare for **iOS developer interviews** with practical Q&A and code samples.
 
 ---
@@ -237,3 +227,167 @@ Model  <---->  ViewModel  <---->  View
 | **MVVM** | ✅ Easy | Logic in ViewModel without UI dependencies |
 
 🧠 In MVVM, create a **test case file** for your ViewModel and test its logic independently.
+
+
+---
+# 🧩 Struct vs Class in Swift
+---
+## ⚙️ Type Difference
+| Concept | Struct | Class |
+|----------|---------|--------|
+| **Type** | Value Type | Reference Type |
+| **Memory** | Copied when assigned | Shared (reference) |
+| **Inheritance** | ❌ Not supported | ✅ Supported |
+| **Mutability** | Needs `var` to modify | Can mutate even if reference is `let` |
+| **Deinitializer** | ❌ No `deinit` | ✅ Has `deinit` |
+
+👉 **Quick Hook:**  
+“**Struct = Value, no Inheritance. Class = Reference, Inheritance + deinit.**”  
+Structs create *copies* (safe, independent). Classes share *references* (changes reflect everywhere).
+
+---
+
+## 🧠 Example: Value Type vs Reference Type
+
+### Struct (Value Type)
+```swift
+struct StructUser {
+    var name: String
+}
+
+var a = StructUser(name: "John")
+var b = a  // COPY
+
+a.name = "Mike"
+
+print(a) // [ name: "Mike" ]
+print(b) // [ name: "John" ]  // independent copy
+```
+
+### Class (Reference Type)
+```swift
+class ClassUser {
+    var name: String
+    init(name: String) {
+        self.name = name
+    }
+}
+
+var a = ClassUser(name: "John")
+var b = a  // REFERENCE (both point to same object)
+
+a.name = "Mike"
+
+print(a.name) // Mike
+print(b.name) // Mike  // both reflect change
+```
+
+---
+
+## 🧱 Difference Between Class and Structure
+
+### **Class**
+- It is **pass by reference** → assigning it to another variable makes a **reference**, not a copy.  
+  So, changes in one reflect in another.  
+- Acts as a **blueprint** of an entity.  
+- Has **properties** and **methods**.  
+- **Supports:** Constructors, Inheritance, Method Override.  
+- Must add an `init()` method.  
+- Use `super` to access parent methods.  
+- Can adopt **protocols**.  
+
+#### Example:
+```swift
+class Animal {
+    var name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+    
+    func move() {
+        print("Animal can move")
+    }
+}
+
+class Dragon: Animal {
+    func fly() {
+        print("Dragon can fly")
+    }
+    
+    override func move() {
+        print("Dragon can move fast")
+    }
+}
+
+let animal = Animal(name: "Dog")
+animal.move() // Animal can move
+
+let dragon = Dragon(name: "Draco")
+dragon.move() // Dragon can move fast
+dragon.fly()  // Dragon can fly
+```
+
+---
+
+### **Struct**
+- It is **pass by value** → assigning it to another variable makes a **separate copy**.  
+  Changes in one do not affect the other.  
+- Can adopt **protocols**.  
+- Use `mutating` keyword to change property values inside methods.  
+  ```swift
+  mutating func takeDamage(_ amount: Int) {
+      health -= amount
+  }
+  ```
+- Structs are **immutable** by default.
+
+#### Example:
+```swift
+struct Animal {
+    var name: String
+    
+    func move() {
+        print("Animal can move")
+    }
+}
+
+let animal = Animal(name: "Tiger")
+animal.move() // Animal can move
+```
+
+---
+
+## 🧭 Choosing Between Structure and Class
+- ✅ Use **Struct** by default.
+- 🧩 Use **Class** when you need **Objective‑C interoperability**.
+
+---
+
+## 🧾 Key Differences Summary
+| Aspect | Struct | Class |
+|---------|---------|--------|
+| **Memory Handling** | Copied | Referenced |
+| **Inheritance** | ❌ No | ✅ Yes |
+| **Deinitializer** | ❌ No | ✅ Yes |
+| **Initializer** | Automatic memberwise | Custom required |
+| **Retain Cycle** | ❌ Not possible | ✅ Possible |
+| **Weak Reference** | ❌ Not allowed | ✅ Allowed |
+
+---
+
+## 🧮 Struct vs Enum (Bonus)
+
+| Feature | Struct | Enum |
+|----------|---------|-------|
+| **Purpose** | Stores multiple properties/methods | Defines fixed set of related values |
+| **Cases** | None | Has named cases |
+| **Associated Values** | Normal properties | Can have associated values per case |
+| **Inheritance** | ❌ | ❌ |
+| **Usage** | Data models | States, options, or choices |
+
+👉 **Quick Hook:**  
+“**Struct = data container, Enum = fixed options with cases.**”
+
+---
+
