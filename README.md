@@ -1905,3 +1905,41 @@ DispatchQueue.global(qos: .userInitiated).async {
 | Best for | Simple async tasks | Complex task dependencies |
 
 ---
+# 🧩 Swift Memory Management: Weak vs Strong References
+
+## 🔍 Why Weak is Slower than Strong
+When you declare a property as **weak**, Swift (and the underlying Objective-C runtime) must do extra bookkeeping to manage memory safely, which makes it slightly slower than a **strong** reference.
+
+### 📘 How it Works
+- Swift keeps a **list of all weak references** to an object.
+- When the object is deallocated, Swift **walks through that list** and **sets all weak references to `nil`** to prevent dangling pointers.
+
+### ⚙️ Strong Reference
+- Just increments/decrements the retain count of an object.
+- Very fast — simple retain/release operations.
+
+---
+
+## ⚡ Performance Comparison
+
+| Reference Type | Retain Count | Speed | Notes |
+|-----------------|--------------|--------|--------|
+| **Strong** | Increases | ⚡ Fast | Simple retain/release |
+| **Weak** | Doesn’t increase | 🐢 Slower | Tracks and nils references |
+| **Unowned** | Doesn’t increase | ⚡ Fast | No tracking, but unsafe if accessed after deallocation |
+
+---
+
+## 🧠 Mutability in Swift
+
+| Type | Keyword | Can Modify? | Example |
+|------|----------|-------------|----------|
+| Immutable | `let` | ❌ No | `let x = 10` |
+| Mutable | `var` | ✅ Yes | `var x = 10; x = 20` |
+
+---
+
+### ✅ Summary
+- Use **strong** for normal ownership.
+- Use **weak** to avoid retain cycles (e.g., delegates).
+- Use **unowned** when you know the reference will never become `nil`.
