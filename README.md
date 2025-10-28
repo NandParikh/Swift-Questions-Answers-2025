@@ -2138,37 +2138,80 @@ class ViewModelTests: XCTestCase {
 }
 ```
 
-## 16. When you should use strong, weak and unowned?
+## 16. When should you use **strong**, **weak**, and **unowned**?
 
-Strong
-Default type of reference.
-Used when one object owns another (like a parent owning a child).
+### 🟢 Strong
+- **Default type of reference.**
+- Used when one object *owns* another (like a parent owning a child).
+- Keeps the object alive as long as the reference exists.
 
-Keeps the object alive as long as the reference exists.
+**Example:**
+```swift
+class ViewController: UIViewController {
+    var label = UILabel() // Strong reference
+}
+```
+A `ViewController` strongly owns its `UILabel`.
 
-Example:
-A ViewController strongly owns its UILabel.
+---
 
-Weak
-Used when two objects can exist independently
+### 🟡 Weak
+- Used when two objects can exist independently.
+- Doesn’t keep the object alive → it’s automatically set to `nil` when the object is deallocated.
+- Always declared as `weak var`.
 
-Doesn’t keep the object alive → it’s automatically set to nil when the object is deallocated
+**Example:**
+```swift
+protocol MyDelegate: AnyObject {
+    func didTapButton()
+}
 
-Always declared as weak var.
+class MyViewController {
+    weak var delegate: MyDelegate? // Weak reference to avoid retain cycle
+}
+```
 
-Example: A delegate reference is usually weak to avoid retain cycles.
+A delegate reference is usually **weak** to avoid retain cycles.
 
-Unowned
-Used when one object depends on another and they have the same lifetime.
+---
 
-Doesn’t keep the object alive, but won’t become nil automatically → leads to a crash if accessed after deallocation.
+### 🔴 Unowned
+- Used when one object depends on another and they have the same lifetime.
+- Doesn’t keep the object alive, **but won’t become nil automatically** → leads to a crash if accessed after deallocation.
 
-Example: A CreditCard has an unowned reference to its Customer.
+**Example:**
+```swift
+class Customer {
+    var creditCard: CreditCard?
+}
 
-Reference	Keeps object alive?	Becomes nil automatically?	Use when…
-strong	✅ Yes	❌ No	Object owns another
-weak	❌ No	✅ Yes	Objects can exist separately
-unowned	❌ No	❌ No	Objects have same lifetime
+class CreditCard {
+    unowned let customer: Customer // Unowned reference
+    init(customer: Customer) {
+        self.customer = customer
+    }
+}
+```
+
+A `CreditCard` has an **unowned** reference to its `Customer`.
+
+---
+
+### 📋 Summary Table
+
+| Reference | Keeps object alive? | Becomes nil automatically? | Use when… |
+|------------|---------------------|-----------------------------|------------|
+| **strong** | ✅ Yes | ❌ No | Object owns another |
+| **weak**   | ❌ No | ✅ Yes | Objects can exist separately |
+| **unowned**| ❌ No | ❌ No | Objects have same lifetime |
+
+---
+
+✅ **Tips:**
+- Use **strong** by default.
+- Use **weak** for delegates or references that can become `nil`.
+- Use **unowned** when two objects depend on each other and live the same duration.
+
 
 ![Strong, Weak, and Unowned References](https://github.com/user-attachments/assets/26d66b71-01dc-420c-9026-de3aaa3c0db1)
 
