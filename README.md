@@ -580,6 +580,63 @@ final class Example {
 “**Strong owns**, **Weak doesn’t (optional)**, **Unowned doesn’t (non-optional)**.”
 
 
+---
+# 🧩 Optionals in Swift
+---
+
+### 🧩 Constants and Variables
+- **let** → Declares a constant; value cannot be changed after assignment.  
+- **var** → Declares a variable; value can be modified anytime.
+
+### ❓ Optionals
+- **Optional (?)** → Variable that may contain a value or `nil`.
+
+### ✅ Safe Unwrapping
+- **if let** → Safely unwraps an optional within a block; executes code only if value exists.  
+- **guard let** → Safely unwraps an optional; exits current scope if value is nil, ensures safe usage after.
+
+👉 **Quick hook:** “`let` = constant, `var` = changeable, `Optional` = maybe nil, `if let` = unwrap in block, `guard let` = unwrap early and exit if nil.”
+
+---
+
+### 💡 Why Optionals?
+Optionals handle `nil` values safely, preventing null pointer exceptions.
+
+### 🧠 Example in Swift
+```swift
+var name: String? = "John"
+
+// Safe unwrapping using if-let
+if let unwrapped = name {
+    print(unwrapped)
+}
+
+// Safe unwrapping using guard-let
+guard let unwrapped = name else {
+    return
+}
+
+// Nil coalescing — use a default value if nil
+let result = name ?? "Default"
+
+// Force unwrap — only use if you're sure it's not nil
+let forced = name!
+```
+
+---
+
+### 🧭 When to Use Each
+| Technique | Use Case |
+|------------|-----------|
+| **Optional binding (if let)** | When you need to use the value temporarily in a small scope |
+| **Guard let** | Early exit pattern, cleaner flow |
+| **Nil coalescing (??)** | Provide default values for nil cases |
+| **Force unwrap (!)** | Only when absolutely certain the value exists |
+
+---
+
+📘 **Summary:**  
+Optionals make Swift safer and more predictable by handling `nil` values gracefully — preventing runtime crashes.
 
 
 
