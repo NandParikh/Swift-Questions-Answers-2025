@@ -1018,9 +1018,245 @@ MyManager.shared.printMessage()
 | **Singleton** | Shared instance | Centralized management |
 
 ---
+# 🧩 What is Delegates / Protocol, Closures, and Data Structures
+---
+## 1. Delegate / Protocol
 
-**Author:** Tech Docs  
-**Language:** Swift  
-**Platform:** iOS  
-**Category:** Architecture & Design Patterns  
+**Description:**  
+Delegate is used for one-to-one communication between objects, usually when you want to send data back from a child to a parent.
 
+**Example:** Passing data from a `DetailViewController` back to `HomeViewController`
+
+```swift
+// Protocol
+protocol DataDelegate: AnyObject {
+    func didSendData(_ data: String)
+}
+
+// Detail View
+class DetailViewController: UIViewController {
+    weak var delegate: DataDelegate?    
+    func sendDataBack() {
+        delegate?.didSendData("Hello from Detail")
+    }
+}
+
+// Home View
+class HomeViewController: UIViewController, DataDelegate {
+    func openDetail() {
+        let detailVC = DetailViewController()
+        detailVC.delegate = self
+        present(detailVC, animated: true)
+    }
+    
+    func didSendData(_ data: String) {
+        print(data) // "Hello from Detail"
+    }
+}
+```
+
+**When to use:** One-to-one communication, especially between view controllers.
+
+---
+
+## 2. Closure (Callback)
+
+**Description:**  
+Closure is used for inline, lightweight callbacks, can be one-to-many or asynchronous, and doesn’t require a protocol.
+
+**Example:**
+```swift
+// Detail View
+class DetailViewController: UIViewController {
+    var completion: ((String) -> Void)?
+    
+    func sendDataBack() {
+        completion?("Hello via Closure")
+    }
+}
+
+// Home View
+class HomeViewController: UIViewController {
+    func openDetail() {
+        let detailVC = DetailViewController()
+        detailVC.completion = { data in
+            print(data) // "Hello via Closure"
+        }
+        present(detailVC, animated: true)
+    }
+}
+```
+
+**When to use:** One-time, inline, or asynchronous callbacks like API responses or button actions.  
+**Delegate:** formal, reusable, one-to-one.  
+**Closure:** lightweight, inline, great for async or temporary callbacks.
+
+---
+
+## 🧩 Difference between Swift, Objective-C, and SwiftUI
+
+---
+
+| Feature | Swift | Objective-C | SwiftUI |
+|----------|--------|--------------|----------|
+| Type | Modern programming language | C-based language | Declarative UI framework |
+| Syntax | Concise, type-safe | Verbose, uses @ symbols | Declarative view syntax |
+
+**Examples:**
+
+**Swift**
+```swift
+let name = "John"
+print("Hello \(name)")
+```
+
+**Objective-C**
+```objc
+NSString *name = @"John";
+NSLog(@"Hello %@", name);
+```
+
+**SwiftUI**
+```swift
+Text("Hello John")
+    .font(.title)
+    .foregroundColor(.blue)
+```
+
+---
+
+## 🧩  Difference between Weak, Atomic, Non-Atomic
+
+---
+
+### Weak - Avoid Retain Cycle
+```objc
+@property (nonatomic, weak) id<SomeDelegate> delegate;
+```
+
+### Atomic - Thread Safe
+```objc
+@property (atomic, strong) NSString *name;
+```
+
+### Nonatomic - Not Thread Safe (Faster)
+```objc
+@property (nonatomic, strong) NSString *name;
+```
+
+---
+
+## 🧩 Explain Higher Order Functions
+
+---
+
+### Map
+```swift
+let numbers = [1, 2, 3, 4]
+let squares = numbers.map { $0 * $0 }
+print(squares)  // [1, 4, 9, 16]
+```
+
+### FlatMap
+```swift
+let nested = [[1, 2], [3, 4], [5, 6]]
+let flattened = nested.flatMap { $0 }
+print(flattened)  // [1, 2, 3, 4, 5, 6]
+```
+
+### Filter
+```swift
+let numbers = [1, 2, 3, 4, 5, 6]
+let even = numbers.filter { $0 % 2 == 0 }
+print(even)  // [2, 4, 6]
+```
+
+### Reduce
+```swift
+let total = [1, 2, 3, 4, 5].reduce(0) { $0 + $1 }
+print(total)  // 15
+```
+
+### Split
+```swift
+let text = "apple,banana,grape"
+let fruits = text.split(separator: ",")
+print(fruits)  // ["apple", "banana", "grape"]
+```
+
+### Join
+```swift
+let words = ["Hello", "Swift", "World"]
+let sentence = words.joined(separator: " ")
+print(sentence)  // "Hello Swift World"
+```
+
+---
+
+## 🧩 Collections in Swift
+
+---
+
+### Set
+```swift
+var fruits: Set<String> = ["Apple", "Banana", "Mango"]
+fruits.insert("Orange")
+print(fruits)
+```
+
+### Array
+```swift
+var fruits = ["Apple", "Banana", "Mango"]
+fruits.append("Orange")
+let upperFruits = fruits.map { $0.uppercased() }
+print(upperFruits)
+```
+
+### Dictionary
+```swift
+var studentScores = ["John": 90, "Emma": 85, "Liam": 95]
+studentScores["Olivia"] = 88
+studentScores.forEach { key, value in
+    print("\(key): \(value)")
+}
+```
+
+---
+
+## SwiftUI Examples
+
+**Array Example in SwiftUI**
+```swift
+struct ContentView: View {
+    let fruits = ["Apple", "Banana", "Mango"]
+    var body: some View {
+        List(fruits, id: \.self) { fruit in
+            Text(fruit)
+        }
+    }
+}
+```
+
+**Dictionary Example in SwiftUI**
+```swift
+struct ContentView: View {
+    let studentScores = ["John": 90, "Emma": 85, "Liam": 95]
+    var body: some View {
+        List(studentScores.keys.sorted(), id: \.self) { key in
+            HStack {
+                Text(key)
+                Spacer()
+                Text("\(studentScores[key]!)")
+            }
+        }
+    }
+}
+```
+
+---
+
+✅ **Summary**
+- **Delegates** = one-to-one reusable communication.
+- **Closures** = inline callback for async or temporary use.
+- **Higher Order Functions** = clean and functional data manipulation.
+- **SwiftUI** = declarative way to design UI.
