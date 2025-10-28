@@ -1736,3 +1736,172 @@ DispatchQueue.global(qos: .userInteractive).async {
 ```
 
 ---
+
+# Swift Concurrency & Task Management
+
+## 🧩 Difference Between Dispatch Queue and Operation Queue
+
+### **Dispatch Queue (GCD)**
+- Part of Grand Central Dispatch (GCD) → lightweight C-level API.
+- Executes tasks FIFO either serially or concurrently.
+- Very fast, minimal overhead, good for simple async tasks.
+
+**Example:**
+```swift
+DispatchQueue.global().async {
+    // background work
+}
+```
+
+### **Operation Queue**
+- Built on top of GCD but more high-level, object-oriented (Operation class).
+- Supports dependencies, priorities, cancellation, and KVO.
+- More flexible for complex task management.
+
+**Example:**
+```swift
+let queue = OperationQueue()
+queue.addOperation {
+    // background work
+}
+```
+
+### **Summary**
+> "Dispatch Queue (GCD) is low-level, lightweight, and good for simple async tasks. Operation Queue is higher-level, supports dependencies, priorities, and cancellation—better for complex task management."
+
+### **When to Use Each**
+- **GCD:** Simple async or background tasks.
+- **OperationQueue:** Complex operations with dependencies, cancellations, or priorities (e.g., image downloading + filtering).
+
+---
+
+## Example: Photo Gallery App
+
+**Scenario:** Each image must be downloaded, then filtered, then displayed.
+
+### **Why OperationQueue is Better**
+✅ Supports chaining with dependencies (filter runs after download)  
+✅ Operations are cancellable if user scrolls away  
+✅ Easier to observe completion
+
+**Code Example:**
+```swift
+import Foundation
+import UIKit
+
+// Operation to download image
+class DownloadImageOperation: Operation {
+    let url: URL
+    var downloadedImage: UIImage?
+    
+    init(url: URL) {
+        self.url = url
+    }
+    
+    override func main() {
+        if isCancelled { return }
+        if let data = try? Data(contentsOf: url) {
+            if isCancelled { return }
+            downloadedImage = UIImage(data: data)
+        }
+    }
+}
+
+// Operation to apply filter
+class FilterImageOperation: Operation {
+    var inputImage: UIImage?
+    var filteredImage: UIImage?
+    
+    override func main() {
+        if isCancelled { return }
+        guard let image = inputImage else { return }
+        // Fake grayscale filter
+        filteredImage = image.withRenderingMode(.alwaysTemplate)
+    }
+}
+
+// Usage
+let queue = OperationQueue()
+let downloadOp = DownloadImageOperation(url: URL(string: "https://picsum.photos/200")!)
+let filterOp = FilterImageOperation()
+
+// Dependency: filter runs AFTER download
+filterOp.addDependency(downloadOp)
+queue.addOperations([downloadOp, filterOp], waitUntilFinished: false)
+
+filterOp.completionBlock = {
+    if let result = filterOp.filteredImage {
+        print("Filtered image ready: \(result)")
+    }
+}
+```
+
+---
+
+## 🧩 Explain GCD - Quality of Service (QoS) Classes
+
+**QoS Classes:**
+- `User-interactive` → Highest priority
+- `User-initiated`
+- `Default`
+- `Utility`
+- `Background` → Lowest priority
+
+**User-interactive:** Immediate UI updates  
+**User-initiated:** Tasks initiated by user that should finish quickly  
+**Utility:** Long-running background tasks (e.g., downloading files)  
+**Background:** Tasks not time-sensitive (e.g., syncing data)
+
+**Example:**
+```swift
+DispatchQueue.global(qos: .userInitiated).async {
+    let data = fetchData()
+    DispatchQueue.main.async {
+        self.updateUI(with: data)
+    }
+}
+```
+
+### **QoS Task Priorities**
+| QoS | Priority | Example Use Case |
+|------|-----------|-----------------|
+| User-interactive | Highest | Animation, UI updates |
+| User-initiated | High | Fetching user data |
+| Default | Normal | Standard tasks |
+| Utility | Low | Downloading large files |
+| Background | Lowest | Cache sync, maintenance |
+
+---
+
+## 🧩 Have you a Google API Experience?
+
+**Yes**, I have worked with Google APIs in both **iOS** and **Flutter** projects.
+
+### **In iOS (Swift):**
+- Used **Google Maps**, **Firebase**, and **Google Sign-In**.
+- Integrated SDKs and handled REST APIs using **URLSession** or **Alamofire**.
+
+### **In Flutter:**
+- Used packages from **pub.dev** like:
+  - `google_maps_flutter`
+  - `firebase_auth`
+  - `google_sign_in`
+
+### **Key Points:**
+- Manage authentication and authorization using **OAuth 2.0** or API keys.
+- Parse JSON responses safely using `Codable`.
+- Maintain modular service layers for cleaner code.
+
+---
+
+✅ **Summary**
+| Feature | Dispatch Queue (GCD) | Operation Queue |
+|----------|----------------------|-----------------|
+| Level | Low-level | High-level |
+| Dependencies | ❌ No | ✅ Yes |
+| Cancellation | ❌ No | ✅ Yes |
+| KVO Support | ❌ No | ✅ Yes |
+| Performance | ✅ Fast | ⚡ Slightly higher overhead |
+| Best for | Simple async tasks | Complex task dependencies |
+
+---
