@@ -1267,7 +1267,7 @@ struct ContentView: View {
 
 
 ---
-## 1️⃣ Is Array a Value Type or Reference Type in Swift?
+## Is Array a Value Type or Reference Type in Swift?
 ---
 
 ### Explanation:
@@ -1293,7 +1293,7 @@ print(arr2) // [1, 2, 3, 4]
 
 ---
 
-## 2️⃣ Xcode Overview and Key Components
+## Xcode Overview and Key Components
 
 ---
 
@@ -1330,7 +1330,7 @@ print(arr2) // [1, 2, 3, 4]
 
 ---
 
-## 3️⃣ Key Features of Swift Language
+## Key Features of Swift Language
 
 ---
 
@@ -1414,7 +1414,7 @@ print(numbers) // [1, 2, 3, 4]
 - ✅ Bridging with Objective-C for mixed projects.  
 
 ---
-## 2. Optionals in Swift
+## Optionals in Swift
 ---
 
 **Definition:** Optionals represent a variable that may or may not hold a value.  
@@ -1430,7 +1430,7 @@ if let unwrapped = name {
 ```
 
 ---
-## 3. iOS App Lifecycle & ViewController Lifecycle
+## iOS App Lifecycle & ViewController Lifecycle
 ---
 
 ### App Lifecycle States:
@@ -1579,3 +1579,160 @@ print(view.bounds)  // internal coordinate system
 | **@objc/@nonobjc** | Swift-Objective-C interoperability control |
 
 
+---
+## 🧩 Content Hugging and Compression Resistance Priority
+---
+
+| Priority Level | Value  |
+|----------------|---------|
+| Low            | 251     |
+| Medium         | 750     |
+| High           | 1000    |
+
+**Content Hugging Priority**: Content does **not want to grow**.  
+If you have 2 labels and you do not want the 1st label to grow, give its horizontal content hugging priority to `252`.  
+Here label 1 will not grow but label 2 will grow.
+
+<img width="370" height="106" alt="Screenshot 2025-10-28 at 10 59 59 PM" src="https://github.com/user-attachments/assets/7bd5a8ee-337b-4529-91be-d73921fc4d73" />
+
+
+**Content Compression Resistance Priority**: Content does **not want to shrink**.  
+If the 1st label in a stack view should not shrink, give its horizontal compression resistance priority to `1000`.
+
+<img width="393" height="90" alt="Screenshot 2025-10-28 at 11 00 11 PM" src="https://github.com/user-attachments/assets/aa32c836-317b-4056-9855-851f3ee0a2de" />
+
+---
+## 🧩 Escaping vs Non-Escaping Closures in Swift
+---
+
+### Non-Escaping Closure
+A **non-escaping** closure is executed **within the function** before it returns.
+
+```swift
+func fetchData(completion: () -> Void) {
+    print("Fetching data...")
+    completion()
+}
+
+fetchData {
+    print("Data fetched!")
+}
+```
+
+**Output:**
+```
+Fetching data...
+Data fetched!
+```
+
+✅ **Advantages:**
+- Simpler and faster (no need to store the closure).
+- Safe — the closure cannot outlive the function’s scope.
+
+❌ **Disadvantages:**
+- Can’t be used for asynchronous operations (e.g., network calls).
+
+---
+
+### Escaping Closure
+An **escaping** closure is called **after the function has returned**, usually for async tasks (like API calls).
+
+```swift
+func downloadFile(completion: @escaping () -> Void) {
+    print("Start downloading...")
+    DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+        completion()
+    }
+}
+
+downloadFile {
+    print("Download finished!")
+}
+```
+
+**Output:**
+```
+Start downloading...
+Download finished!
+```
+
+✅ **Advantages:**
+- Perfect for async operations (API calls, timers).
+- Allows callbacks after long-running tasks complete.
+
+❌ **Disadvantages:**
+- Requires careful memory management (retain cycles).
+- Slightly slower due to escaping behavior.
+
+**Example with Retain Cycle:**
+
+```swift
+class Downloader {
+    var completion: (() -> Void)?
+
+    func startDownload() {
+        downloadFile {
+            print("Download complete")
+        }
+    }
+
+    func downloadFile(completion: @escaping () -> Void) {
+        self.completion = completion
+    }
+
+    deinit {
+        print("Downloader deinitialized")
+    }
+}
+
+var downloader: Downloader? = Downloader()
+downloader?.startDownload()
+downloader = nil  // ❌ Retain cycle, deinit not called
+```
+
+Use `[weak self]` or `[unowned self]` in the capture list to prevent leaks.
+
+---
+## 🧩 GCD (Grand Central Dispatch) – Quality of Service (QoS)
+---
+
+GCD defines several **QoS classes** to prioritize tasks:
+
+| QoS Class         | Description | Priority |
+|-------------------|--------------|-----------|
+| User-interactive  | UI updates, animations | Highest |
+| User-initiated    | Tasks initiated by user | High |
+| Default           | Standard priority | Medium |
+| Utility           | Long-running, less urgent | Low |
+| Background        | Sync, cache, prefetch | Lowest |
+
+### Example Usage
+
+**User-Initiated:**
+```swift
+DispatchQueue.global(qos: .userInitiated).async {
+    let data = fetchData()
+    DispatchQueue.main.async {
+        self.updateUI(with: data)
+    }
+}
+```
+
+**Utility:**
+```swift
+DispatchQueue.global(qos: .utility).async {
+    let fileData = downloadLargeFile()
+    DispatchQueue.main.async {
+        self.showDownloadComplete()
+    }
+}
+```
+
+**User-Interactive:**
+```swift
+DispatchQueue.global(qos: .userInteractive).async {
+    performQuickTask()
+}
+```
+
+---
