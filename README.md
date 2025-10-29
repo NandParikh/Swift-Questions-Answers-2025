@@ -2220,7 +2220,7 @@ SOLID Principle - Single Responsibility Principle (SRP)
 ---
 
 ---
-** 🧩 Single Responsibility Principle (SRP)**
+** Single Responsibility Principle (SRP)**
 ---
 The Single Responsibility Principle states that every class should have only one reason to change, meaning it should have only one job or responsibility. This helps in maintaining clean, modular, and easily testable code.
 
@@ -2257,7 +2257,7 @@ class Communication {
 }
 ```
 ---
-Open Closed Principle - SOLID Design Principle
+** Open Closed Principle (SRP) **
 ---
 ■ Open Closed Principle
 
@@ -2310,7 +2310,7 @@ class PaymentProcessor {
 }
 ```
 ---
-Liskov Substitution Principle (SOLID)
+** Liskov Substitution Principle **
 ---
 
 Definition:
@@ -2371,7 +2371,7 @@ correct  : letBirdFly(bird:Sparrow)
 Wrong    : letBirdFly(bird:Penguin)
 ```
 ---
-Interface Segregation Principle (ISP)
+** Interface Segregation Principle (ISP) **
 ---
 
 The Interface Segregation Principle (ISP) states that:
@@ -2419,7 +2419,7 @@ class Robot: Workable {
 ■ Classes should implement only what they actually need.
 
 ---
-Dependency Inversion Principle
+** Dependency Inversion Principle **
 ---
 
 The Dependency Inversion Principle (DIP) states that high-level modules should not depend on low-level modules. 
