@@ -2611,3 +2611,59 @@ sms.placeOrder()
 
 Now, OrderService does not depend on any specific notification implementation. 
 We can add new notifiers (like PushNotifier) without modifying existing code, adhering to the Open/Closed and Dependency Inversion principles.
+
+---
+## 🧩 Advanced Topics
+---
+### 11️⃣ Explain Combine framework
+Combine is Apple’s reactive programming framework.
+---
+
+```swift
+import Combine
+
+class ViewModel: ObservableObject {
+    @Published var text = ""
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        $text.sink { print("Text changed: \($0)") }.store(in: &cancellables)
+    }
+}
+```
+
+---
+
+### Explain Dependency Injection
+Passing dependencies instead of creating them inside a class.
+
+```swift
+class APIService {}
+class ViewModel {
+    private let service: APIService
+    init(service: APIService) {
+        self.service = service
+    }
+}
+```
+
+---
+
+## iOS App Lifecycle
+
+### Describe App Lifecycle methods
+- `application(_:didFinishLaunchingWithOptions:)`
+- `sceneWillEnterForeground`
+- `sceneDidEnterBackground`
+
+---
+
+## Performance Optimization
+
+- Use Instruments for memory leaks.  
+- Profile with Time Profiler.  
+- Avoid force unwrapping.  
+- Use lazy loading for heavy objects.
+
+---
+
