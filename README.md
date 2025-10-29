@@ -2316,6 +2316,7 @@ Liskov Substitution Principle (SOLID)
 Definition:
 The Liskov Substitution Principle states that objects of a superclass should be
 replaceable with objects of a subclass without breaking the program.
+
 Explanation:
 If class B is a subclass of class A, then we should be able to replace A with B
 without affecting the behavior of the program.
@@ -2416,3 +2417,70 @@ class Robot: Workable {
 
 ■ Split large protocols into smaller, more specific ones.
 ■ Classes should implement only what they actually need.
+
+---
+Dependency Inversion Principle
+---
+
+The Dependency Inversion Principle (DIP) states that high-level modules should not depend on low-level modules. 
+Both should depend on abstractions. This helps reduce tight coupling between components, improving flexibility and testability.
+
+Key points:
+
+• • High-level modules should not depend on low-level modules.
+• • Both should depend on abstractions (e.g., protocols or interfaces).
+• • Abstractions should not depend on details. Details should depend on abstractions.
+
+❌ Bad Example
+In the following example, the OrderService class depends directly on the EmailNotifier class. 
+If we want to switch to an SMSNotifier, we must modify the OrderService class — which violates DIP.
+
+```
+class EmailNotifier {
+   func sendEmail() { }
+}
+
+class OrderService {
+   let notifier = EmailNotifier()
+   func placeOrder() {
+       notifier.sendEmail()
+   }
+}
+```
+
+✅ Good Example
+In this improved version, we introduce a Notifier protocol. Both EmailNotifier and SMSNotifier conform to this protocol. OrderService now depends on the abstraction (Notifier) rather than a concrete class.
+
+```
+protocol Notifier {
+   func sendNotification()
+}
+
+class EmailNotifier: Notifier {
+   func sendNotification() { }
+}
+
+class SMSNotifier: Notifier {
+   func sendNotification() { }
+}
+
+class OrderService {
+   let notifier: Notifier
+   init(notifier: Notifier) {
+       self.notifier = notifier
+   }
+   func placeOrder() {
+       notifier.sendNotification()
+   }
+}
+
+let email = OrderService(notifier: EmailNotifier())
+email.placeOrder()
+
+// Same for SMS service
+let sms = OrderService(notifier: SMSNotifier())
+sms.placeOrder()
+```
+
+Now, OrderService does not depend on any specific notification implementation. 
+We can add new notifiers (like PushNotifier) without modifying existing code, adhering to the Open/Closed and Dependency Inversion principles.
