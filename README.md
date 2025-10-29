@@ -2219,8 +2219,9 @@ A `CreditCard` has an **unowned** reference to its `Customer`.
 SOLID Principle - Single Responsibility Principle (SRP)
 ---
 
+---
 ** 🧩 Single Responsibility Principle (SRP)**
-
+---
 The Single Responsibility Principle states that every class should have only one reason to change, meaning it should have only one job or responsibility. This helps in maintaining clean, modular, and easily testable code.
 
 Key Points:
@@ -2255,3 +2256,55 @@ class Communication {
    func sendEmail() { }
 }
 ```
+---
+Open Closed Principle - SOLID Design Principle
+---
+■ Open Closed Principle
+
+Definition:
+A class should be open for extension but closed for modification.
+You should be able to add new functionality without changing existing code.
+
+■ Explanation:
+This principle promotes flexibility and reduces the risk of introducing bugs
+when adding new features. Instead of modifying existing code,
+you extend it using inheritance or protocols.
+---
+```
+■ Bad Example (Violates Open Closed Principle):
+class PaymentProcessor {
+    func pay(by type: String) {
+        if type == "creditCard" {
+            // process credit card payment
+        } else if type == "paypal" {
+            // process PayPal payment
+        }
+    }
+}
+Problem:
+- Every time a new payment method is added, you must modify this class.
+- This increases the risk of breaking existing functionality.
+---
+■ Good Example (Follows Open Closed Principle):
+protocol Payment {
+    func pay()
+}
+
+class CreditCardPayment: Payment {
+    func pay() {
+        print("Paid using Credit Card")
+        }
+}
+
+class PayPalPayment: Payment {
+    func pay() {
+    print("Paid using PayPal")
+    }
+}
+Now, the PaymentProcessor can accept any Payment type without modification.
+
+class PaymentProcessor {
+    func process(payment: Payment) {
+    payment.pay()
+    }
+}
