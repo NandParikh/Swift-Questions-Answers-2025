@@ -2665,5 +2665,179 @@ class ViewModel {
 - Avoid force unwrapping.  
 - Use lazy loading for heavy objects.
 
----
+
+# 📘 Combine Framework --- Interview Ready Guide
+
+## What is Combine?
+
+Combine is Apple's reactive programming framework for handling
+asynchronous events and data streams. It provides **Publishers**,
+**Subscribers**, and **Operators**. Think of it as a modern alternative
+to Delegates, Closures, and NotificationCenter.
+
+
+## Basic Terms
+
+  **Publisher**         Emits a sequence of values over time (e.g., API
+                        responses, text field updates).
+
+  **Subscriber**        Receives and reacts to those emitted values.
+
+  **Operator**          Modifies values between publisher and subscriber
+                        (e.g., `map`, `filter`, `debounce`).
+
+  **Cancellable**       A token to stop a subscription when you no longer
+                        need updates.
+
+## Basic Example --- Just Publisher
+
+``` swift
+import Combine
+
+let publisher = Just("Hello Combine")
+let subscriber = publisher.sink { value in
+    print("Received:", value)
+}
+```
+
+**Explanation:** - `Just` is a simple publisher that emits one value and
+finishes. - `sink` is a subscriber that receives that value. - Output:
+`Received: Hello Combine`
+
+------------------------------------------------------------------------
+
+## Combine with Multiple Operators
+
+``` swift
+import Combine
+
+let numbers = [1, 2, 3, 4, 5]
+let publisher = numbers.publisher
+
+let subscriber = publisher
+    .filter { $0 % 2 == 0 }   // Take only even numbers
+    .map { $0 * 10 }          // Multiply each by 10
+    .sink { value in
+        print("Received:", value)
+    }
+```
+
+**Explanation:** - The array becomes a publisher. - `filter` passes only
+even numbers. - `map` modifies them. - Output:
+`Received: 20   Received: 40`
+
+------------------------------------------------------------------------
+
+## Combine with URLSession (Most Common Interview Example)
+
+``` swift
+import Combine
+import Foundation
+
+struct User: Codable {
+    let id: Int
+    let name: String
+}
+
+class NetworkManager {
+    var cancellables = Set<AnyCancellable>()
+    
+    func fetchUsers() {
+        guard let url = URL(string: "https://jsonplaceholder.typicode.com/users") else { return }
+        
+        URLSession.shared.dataTaskPublisher(for: url)
+            .map { $0.data }
+            .decode(type: [User].self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("✅ Finished fetching users")
+                    case .failure(let error):
+                        print("❌ Error:", error)
+                    }
+                },
+                receiveValue: { users in
+                    print("👤 Users:", users)
+                }
+            )
+            .store(in: &cancellables)
+    }
+}
+```
+
+**Explanation:** - `dataTaskPublisher` publishes (data, response) from a
+network call. - `.map` extracts the data. - `.decode` converts JSON to
+`[User]`. - `.receive(on:)` ensures UI updates happen on the main
+thread. - `.sink` handles completion and values. - `.store(in:)` keeps
+the subscription alive until you cancel or the object deallocates.
+
+✅ **Interview Tip:** You can explain that Combine simplifies async data
+handling and replaces old patterns like Delegates and Closures.
+
+------------------------------------------------------------------------
+
+## Combine with @Published and ViewModel (MVVM Integration)
+
+``` swift
+import Combine
+import Foundation
+
+class CounterViewModel: ObservableObject {
+    @Published var count = 0
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        $count
+            .filter { $0 % 2 == 0 }
+            .sink { value in
+                print("Even count:", value)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func increment() {
+        count += 1
+    }
+}
+```
+
+**Explanation:** - `@Published` automatically creates a publisher for
+the property. - `$count` allows Combine to observe changes. - `.sink`
+reacts whenever `count` changes. - This pattern is heavily used in
+**SwiftUI MVVM**.
+
+------------------------------------------------------------------------
+
+## Important Operators for Interview
+
+  -------------------------------------------------------------------------------------------------------------
+  Operator               Description                   Example
+  ---------------------- ----------------------------- --------------------------------------------------------
+  `map`                  Transforms data               `.map { $0 * 2 }`
+
+  `filter`               Filters emitted values        `.filter { $0 > 10 }`
+
+  `debounce`             Waits before emitting         `.debounce(for: .seconds(1), scheduler: RunLoop.main)`
+
+  `merge`                Combines multiple publishers  `publisher1.merge(with: publisher2)`
+
+  `combineLatest`        Emits when any of multiple    `combineLatest(textPublisher, sliderPublisher)`
+                         publishers emit               
+  -------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## Common Interview Questions
+
+1.  What is Combine used for?
+2.  Difference between Combine, async/await, and Delegates?
+3.  What is the role of Cancellable?
+4.  Explain `map`, `filter`, and `decode`.
+5.  How to handle networking with Combine?
+6.  How to cancel a subscription?
+7.  How is Combine used with SwiftUI's `@Published` properties?
+
+
 
