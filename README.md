@@ -641,6 +641,52 @@ let forced = name!
 📘 **Summary:**  
 Optionals make Swift safer and more predictable by handling `nil` values gracefully — preventing runtime crashes.
 
+---
+### What are property wrappers?
+They add extra behavior to properties.  
+Example: `@State`, `@Published`, `@AppStorage` in SwiftUI.
+
+```swift
+
+@propertyWrapper
+struct Capitalized {
+    private var text: String = ""
+
+    var wrappedValue: String {
+        get { text }
+        set { text = newValue.capitalized }
+    }
+}
+
+struct User {
+    @Capitalized var name: String
+}
+
+var user = User()
+user.name = "john doe"
+print(user.name) // Output: "John Doe"
+
+```
+---
+## 🧩 SwiftUI & UIKit Integration
+---
+
+### How do you manage state in SwiftUI?
+- `@State` for local view state.  
+- `@ObservedObject` or `@StateObject` for shared model state.  
+- `@EnvironmentObject` for global data.
+
+```swift
+struct CounterView: View {
+    @State private var count = 0
+    var body: some View {
+        VStack {
+            Text("Count: \(count)")
+            Button("Increment") { count += 1 }
+        }
+    }
+}
+```
 
 ---
 # 🧩 SwiftUI Data Flow
@@ -942,7 +988,24 @@ class LoginPresenter {
     }
 }
 ```
+---
 
+## 🧩 OOP & Architecture
+
+### 4️⃣ Explain MVC, MVVM, VIPER patterns.
+- **MVC:** Model-View-Controller (default in UIKit).
+- **MVVM:** Separates UI from logic with `ViewModel`.
+- **VIPER:** Modular and testable with clear separation of layers.
+
+**MVVM Example:**
+```swift
+class UserViewModel: ObservableObject {
+    @Published var username = ""
+    func fetchUser() {
+        username = "John Doe"
+    }
+}
+```
 ---
 
 ## 🧠 VIPER (View-Interactor-Presenter-Entity-Router)
@@ -1019,6 +1082,31 @@ MyManager.shared.printMessage()
 | **MVP** | UI logic separation | Easier testing |
 | **VIPER** | Modular design | Best for large projects |
 | **Singleton** | Shared instance | Centralized management |
+
+
+---
+## Networking & API Handling
+---
+
+### Example of REST API with async/await + Codable
+```swift
+class NetworkService {
+    func fetchUsers() async throws -> [User] {
+        let url = URL(string: "https://api.example.com/users")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode([User].self, from: data)
+    }
+}
+
+struct User: Codable, Identifiable {
+    let id: Int
+    let name: String
+}
+```
+
+✅ **Explanation:**
+- `Codable` = `Decodable` + `Encodable`.
+- `async/await` simplifies asynchronous code.
 
 ---
 # 🧩 What is Delegates / Protocol, Closures, and Data Structures
@@ -1201,10 +1289,21 @@ print(sentence)  // "Hello Swift World"
 ---
 
 ### Set
+A Set is a collection of unique, unordered values.
+Unlike arrays, a set does not allow duplicates.
+
+It’s fast for checking if an element exists.
+
 ```swift
 var fruits: Set<String> = ["Apple", "Banana", "Mango"]
 fruits.insert("Orange")
 print(fruits)
+
+insert(_:) → add element
+remove(_:) → remove element
+contains(_:) → check if element exists
+union(_:) → combine sets
+intersection(_:) → common elements
 ```
 
 ### Array
@@ -1214,6 +1313,13 @@ fruits.append("Orange")
 let upperFruits = fruits.map { $0.uppercased() }
 print(upperFruits)
 ```
+Common array functions (higher-order):
+append(_:) → add element
+remove(at:) → remove element
+map → transform elements
+filter → filter elements
+reduce → combine elements
+forEach → iterate elements
 
 ### Dictionary
 ```swift
@@ -1223,6 +1329,18 @@ studentScores.forEach { key, value in
     print("\(key): \(value)")
 }
 ```
+Common dictionary functions:
+updateValue(_:forKey:) → add/update element
+removeValue(forKey:) → remove element
+keys → get all keys
+values → get all values
+forEach → iterate key-value pairs
+
+studentScores["Olivia"] = 88            // add new
+studentScores.removeValue(forKey: "John") // remove
+studentScores.forEach { key, value in
+    print("\(key): \(value)")
+}
 
 ---
 
@@ -1329,9 +1447,7 @@ print(arr2) // [1, 2, 3, 4]
 
 
 ---
-
 ## Key Features of Swift Language
-
 ---
 
 | Feature | Description |
@@ -1345,11 +1461,8 @@ print(arr2) // [1, 2, 3, 4]
 | **Playground feature** | Allows real-time code execution for testing logic |
 | **Auto-fix errors** | Xcode suggests quick fixes for syntax or type errors |
 
-
 ---
-
 ## Exception Handling and Debugging in Swift
-
 ---
 
 ### Common Errors:
@@ -1373,9 +1486,7 @@ print(array[5]) // ❌ Index out of range error
 To fix, always check the index validity before access.
 
 ---
-
 ## Additional Swift Concepts
-
 ---
 
 ### 🧩 Array
@@ -2216,11 +2327,27 @@ A `CreditCard` has an **unowned** reference to its `Customer`.
 ![Strong, Weak, and Unowned References](https://github.com/user-attachments/assets/26d66b71-01dc-420c-9026-de3aaa3c0db1)
 
 ---
-SOLID Principle - Single Responsibility Principle (SRP)
+### What is ARC and how does it work?
 ---
 
+ARC (Automatic Reference Counting) manages memory automatically.  
+It increases retain count when an object is referenced and decreases when released.
+
+- **Strong** → Keeps object alive.  
+- **Weak** → Doesn’t retain, becomes nil when deallocated.  
+- **Unowned** → Doesn’t retain, but unsafe (crashes if accessed after deallocation).
+
 ---
-** Single Responsibility Principle (SRP)**
+SOLID Principle - Single Responsibility Principle (SRP)
+---
+**S**ingle Responsibility – Class does one job.  
+**O**pen/Closed – Open for extension, closed for modification.  
+**L**iskov Substitution – Subtypes must behave like base types.  
+**I**nterface Segregation – Don’t force classes to implement unused interfaces.  
+**D**ependency Inversion – Depend on abstractions, not concretions.
+
+---
+** Single Responsibility Principle (SRP)** 
 ---
 The Single Responsibility Principle states that every class should have only one reason to change, meaning it should have only one job or responsibility. This helps in maintaining clean, modular, and easily testable code.
 
