@@ -2308,3 +2308,111 @@ class PaymentProcessor {
     payment.pay()
     }
 }
+```
+---
+Liskov Substitution Principle (SOLID)
+---
+
+Definition:
+The Liskov Substitution Principle states that objects of a superclass should be
+replaceable with objects of a subclass without breaking the program.
+Explanation:
+If class B is a subclass of class A, then we should be able to replace A with B
+without affecting the behavior of the program.
+
+■ Bad Example
+```
+class Bird {
+    func fly() { }
+    }
+
+class Penguin: Bird {
+    override func fly() {
+    // Penguins can’t fly - leads to runtime error!
+    fatalError("Penguins can't fly!")
+    }
+}
+
+func makeBirdFly(_ bird: Bird) {
+    bird.fly()
+}
+
+let sparrow = Bird()
+makeBirdFly(sparrow) // ■ Works
+let penguin = Penguin()
+makeBirdFly(penguin) // ■ Breaks LSP
+```
+---
+■ Good Example
+
+```
+class Bird {
+    func makeSound() { }
+}
+
+protocol Flyable {
+    func fly()
+}
+
+class Sparrow: Bird, Flyable {
+    func fly() { print("Sparrow flying") }
+}
+
+class Penguin: Bird {
+    func swim(){}
+}
+
+func letBirdFly(bird : flyable){
+    bird:fly()
+}
+
+correct  : letBirdFly(bird:Sparrow)
+Wrong    : letBirdFly(bird:Penguin)
+```
+---
+Interface Segregation Principle (ISP)
+---
+
+The Interface Segregation Principle (ISP) states that:
+"A class should not be forced to implement interfaces it does not use."
+Meaning: An interface should have only the methods that are relevant to a specific class.
+If a class doesn’t need a certain behavior, that method should not be in its interface.
+In Swift, this can be implemented using multiple small protocols instead of one large protocol.
+
+■ Bad Example
+```
+protocol Worker {
+    func work()
+    func eat()
+}
+
+class Human: Worker {
+    func work() { print("Human working...") }
+    func eat() { print("Human eating...") }
+}
+
+class Robot: Worker {
+    func work() { print("Robot working...") }
+    func eat() { /* ■ Robot does not need to eat */ }
+}
+```
+■ Good Example
+
+```
+protocol Workable { func work() }
+protocol Eatable { func eat() }
+
+class Human: Workable, Eatable {
+    func work() { print("Human working...") }
+    func eat() { print("Human eating...") }
+}
+
+class Robot: Workable {
+    func work() { print("Robot working...") }
+}
+```
+
+■ Summary:
+
+■ Split large protocols into smaller, more specific ones.
+■ Classes should implement only what they actually need.
