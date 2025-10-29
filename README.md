@@ -2215,5 +2215,43 @@ A `CreditCard` has an **unowned** reference to its `Customer`.
 
 ![Strong, Weak, and Unowned References](https://github.com/user-attachments/assets/26d66b71-01dc-420c-9026-de3aaa3c0db1)
 
+---
+SOLID Principle - Single Responsibility Principle (SRP)
+---
 
+** 🧩 Single Responsibility Principle (SRP)**
 
+The Single Responsibility Principle states that every class should have only one reason to change, meaning it should have only one job or responsibility. This helps in maintaining clean, modular, and easily testable code.
+
+Key Points:
+- Segregation of duties ensures that changes in one module do not affect another module.
+
+- Every class should have only one responsibility.
+
+```
+Bad Example:
+In this example, the `InvoiceManager` class is handling multiple responsibilities — calculating invoices, managing database operations, and sending communications.
+
+class InvoiceManager {
+   func calculateInvoice() { }
+   func manageDB() { }
+   func sendEmail() { }
+}
+```
+```
+Good Example:
+Here, each feature is separated into its own class — one class for calculation, one for database management, and another for communication. This aligns with the Single Responsibility Principle.
+
+class CalculateInvoice {
+   func calculate() { }
+}
+
+class DBManager {
+   func insert() { }
+   func update() { }
+}
+
+class Communication {
+   func sendEmail() { }
+}
+```
