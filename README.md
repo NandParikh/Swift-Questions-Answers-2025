@@ -2615,7 +2615,7 @@ We can add new notifiers (like PushNotifier) without modifying existing code, ad
 ---
 ## 🧩 Advanced Topics
 ---
-### 11️⃣ Explain Combine framework
+### Explain Combine framework
 Combine is Apple’s reactive programming framework.
 ---
 
