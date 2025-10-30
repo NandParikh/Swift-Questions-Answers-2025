@@ -643,11 +643,93 @@ Optionals make Swift safer and more predictable by handling `nil` values gracefu
 
 ---
 ### What are property wrappers?
-They add extra behavior to properties.  
-Example: `@State`, `@Published`, `@AppStorage` in SwiftUI.
+
+---
+Built In Property Wrapper
+---
+
+@State, @Binding @Published, @AppStorage are all built-in property wrappers provided by Swift (mainly for SwiftUI and Combine).
+
+| Wrapper         | Framework | Purpose                                                                    | Example                                                            |
+| --------------- | --------- | -------------------------------------------------------------------------- | ------------------------------------------                         |
+| **@State**      | SwiftUI   | Used for local, mutable state inside a SwiftUI view.                       | `@State private var count = 0`                                     |
+| **@binding  **  | SwiftUI   | It provides a two-way data flow — when the child updates the value, the parent sees the change too.” | `@Binding var name: String"`             |
+| **@Published**  | Combine   | Used inside `ObservableObject` to automatically publish changes.           | `@Published var name = "John"`                                     |
+| **@AppStorage** | SwiftUI   | Stores data directly in **UserDefaults** and keeps it in sync with the UI. | `@AppStorage("theme") var theme = "Light"`                         |
+
+
+- All of them are property wrappers, meaning they:
+- Wrap around a stored property (wrappedValue)
+- Add extra behavior such as:
+- Auto-updating UI (@State, @AppStorage)
+- Notifying subscribers (@Published)
+- Are written with the @ syntax.
+
+
+---
+🧠 What Are Property Observers?
+---
+
+Property observers are special blocks of code that run automatically when a property’s value changes.
+They allow you to observe and respond to changes in stored properties.
+
+| Observer      | When It Runs                      | Purpose                                                 |
+| ------------- | --------------------------------- | ------------------------------------------------------- |
+| **`willSet`** | Just **before** the value changes | Lets you know the *new value* that’s about to be set    |
+| **`didSet`**  | Right **after** the value changes | Lets you access the *old value* and react to the change |
+
 
 ```swift
+var score: Int = 0 {
+    willSet {
+        print("Score will change to \(newValue)")
+    }
+    didSet {
+        print("Score changed from \(oldValue) to \(score)")
+    }
+}
 
+score = 10
+
+Output:
+Score will change to 10
+Score changed from 0 to 10
+
+```
+---
+🧠 What Are Property Accessors?
+---
+
+Those are property accessors, not observers.
+get and set are called Property Accessors
+They are used in computed properties, not stored ones.
+
+```swift
+var doubleScore: Int {
+    get { score * 2 }
+    set { score = newValue / 2 }
+}
+
+```
+
+| Keyword             | Type          | Used For                                               |
+| ------------------- | ------------- | ------------------------------------------------------ |
+| `get`, `set`        | **Accessors** | Define how a **computed property** reads/writes values |
+| `willSet`, `didSet` | **Observers** | React to **changes** in stored properties              |
+
+
+---
+# What is Custom Property Wrappers, Projected value? 
+---
+
+Property wrappers add **extra behavior** to Swift properties.  
+They help you add logic around how a property is **stored, read, or modified** — without repeating code.
+
+---
+
+## ✳️ Basic Example
+
+```swift
 @propertyWrapper
 struct Capitalized {
     private var text: String = ""
@@ -665,8 +747,141 @@ struct User {
 var user = User()
 user.name = "john doe"
 print(user.name) // Output: "John Doe"
-
 ```
+
+✅ *Explanation:*  
+Every time you assign a value to `name`, it automatically becomes capitalized.
+
+---
+## 🪄 What Is a Projected Value and Wrapped Value?
+----
+
+When you create a **property wrapper**, Swift gives you two special abilities:  
+
+1. A **wrapped value** – the real data you use every day (e.g., `player.score`).  
+2. A **projected value** – extra info or helper you access using `$` (e.g., `player.$score`).
+
+---
+
+### Example – Custom Wrapper
+
+```swift
+@propertyWrapper
+struct Limited {
+    private var value: Int = 0
+    private var maxLimit: Int
+
+    // ✅ wrappedValue – the real property value
+    var wrappedValue: Int {
+        get { value }
+        set { value = min(newValue, maxLimit) }
+    }
+
+    // ✅ projectedValue – the extra helper or message
+    var projectedValue: String {
+        return "Value is within \(maxLimit) limit"
+    }
+
+    init(limit: Int) {
+        self.maxLimit = limit
+    }
+}
+
+struct Player {
+    @Limited(limit: 100) var score: Int
+}
+
+var player = Player()
+player.score = 120
+print(player.score)   // Output: 100
+print(player.$score)  // Output: "Value is within 100 limit"
+```
+
+---
+
+### 🧩 How It Works (Under the Hood)
+
+When you write:
+```swift
+@Limited(limit: 100) var score: Int
+```
+
+Swift automatically expands it into something like this:
+
+```swift
+private var _score = Limited(limit: 100)
+
+var score: Int {
+    get { _score.wrappedValue }
+    set { _score.wrappedValue = newValue }
+}
+
+var $score: String {
+    _score.projectedValue
+}
+```
+
+So:
+- `score` → uses `wrappedValue`
+- `$score` → uses `projectedValue`
+
+---
+
+### 💡 Quick Summary
+
+| Concept | Used As | Purpose | Example |
+|----------|----------|----------|----------|
+| **wrappedValue** | `score` | The actual value you read/write | `player.score = 120` |
+| **projectedValue** | `$score` | Provides extra info or helper behavior | `print(player.$score)` |
+
+---
+
+## 🔍 What Is a Property Observer?
+
+Property observers let you **react to value changes** in a stored property.  
+They are called **every time** the property’s value is set.
+
+### Example:
+
+```swift
+class Counter {
+    var value: Int = 0 {
+        willSet {
+            print("About to set value to \(newValue)")
+        }
+        didSet {
+            print("Value changed from \(oldValue) to \(value)")
+        }
+    }
+}
+
+let counter = Counter()
+counter.value = 5
+// Output:
+// About to set value to 5
+// Value changed from 0 to 5
+```
+
+✅ *Explanation:*  
+- `willSet` runs **before** the value changes.  
+- `didSet` runs **after** the value changes.
+
+---
+
+🧩 **Summary:**
+| Concept | Purpose | Example |
+|----------|----------|----------|
+| **Property Wrapper** | Add reusable logic around property storage | `@State`, `@Published` |
+| **Wrapped Value** | The property’s main value | `player.score` |
+| **Projected Value** | Helper accessed using `$` | `player.$score` |
+| **Property Observer** | React to changes (`willSet`, `didSet`) | `counter.value = 5` |
+
+---
+
+🚀 *Now you understand how property wrappers, projected values, and property observers work together in Swift!*
+
+
+
 ---
 ## 🧩 SwiftUI & UIKit Integration
 ---
