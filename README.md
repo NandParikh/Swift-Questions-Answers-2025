@@ -299,7 +299,13 @@ print(b.name) // Mike  // both reflect change
 - **Supports:** Constructors, Inheritance, Method Override.  
 - Must add an `init()` method.  
 - Use `super` to access parent methods.  
-- Can adopt **protocols**.  
+- Can adopt **protocols**.
+- Allow inheritance
+- It reside in heap  
+- random location in memory
+- If you make copy of class object, it will not create seperate copy.
+- If you change property of copied object then it will also change it for your original object
+- It has access level- Private, Public, FilePrivate, Internal
 
 Example
 NSObject -> UIResponder -> UIView -> UIController -> UIButton
@@ -340,8 +346,21 @@ dragon.fly()  // Dragon can fly
 
 ### **Struct**
 - It is **pass by value** → assigning it to another variable makes a **separate copy**.  
-  Changes in one do not affect the other.  
-- Can adopt **protocols**.  
+  Changes in one do not affect the other.
+- not allow inheritance
+- It resides in a stack - FIFO
+- Can adopt **protocols**.
+- it is pass by value
+- it actually stores the value
+- If you make coy of struct obj, it will create seperate copy of it
+- If you change property of copied object then it will not change it for your original object
+- It is good to create struct for datamodel   instead of class
+- Simpler
+- Faster
+- Deep copy
+- Thread Safe
+- No memory leak
+- Work with custom objects
 - Use `mutating` keyword to change property values inside methods.  
   ```swift
   mutating func takeDamage(_ amount: Int) {
@@ -412,8 +431,33 @@ This README provides a detailed explanation of **Memory Management (ARC)** and d
 5. [Declaration Modifiers](#declaration-modifier)
 
 ---
+## 🧩 What is Tupple?
+---
+comma seperated list of types, enclosed in paranthesis
 
+You can use tuple as return type of function which can contain multiple values
+
+```
+let myTuple= (“nand”, 35)
+ myTuple.0 // nand
+myTuple.1 // 35
+
+Named Tuple
+let myTuple = (name: “nand”, age: 35)
+myTuple.name // nand
+myTuple.age // 35
+
+DataType with Tuple
+let myTuple : (name : String, age : Int)
+myTuple = (name : “nand”, age : 35)
+
+myTuple.name // nand
+myTuple.age // 35
+```
+
+----
 ## 🧩 Memory Management (ARC)
+----
 
 **ARC (Automatic Reference Counting)** automatically manages memory by counting object references.
 
