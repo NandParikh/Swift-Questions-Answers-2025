@@ -991,11 +991,7 @@ counter.value = 5
 | **Property Observer** | React to changes (`willSet`, `didSet`) | `counter.value = 5` |
 
 ---
-
 🚀 *Now you understand how property wrappers, projected values, and property observers work together in Swift!*
-
-
-
 ---
 ## 🧩 SwiftUI & UIKit Integration
 ---
@@ -1263,6 +1259,102 @@ struct ThirdView: View {
 <img width="611" height="204" alt="Screenshot 2025-10-28 at 8 04 52 PM" src="https://github.com/user-attachments/assets/4d982a87-1c0c-4389-8a86-eefb4f5c9362" />
 
 
+---
+## 🧩  What is Codable?
+---
+
+**Codable** is a type alias that combines two protocols — `Encodable` and `Decodable`.
+
+```swift
+typealias Codable = Encodable & Decodable
+```
+
+It allows Swift objects to be easily converted to and from **JSON**, **Property Lists**, or other data formats.
+
+---
+
+## 🧱 Codable Includes Two Protocols
+
+### 1. 📝 Encodable
+Converts Swift objects **into JSON** (or other formats).
+
+Commonly used with:
+- `JSONEncoder()`  
+- `PropertyListEncoder()`
+
+### 🔹 Example — Encode (Swift → JSON)
+
+```swift
+func saveItems() {
+    let userdefaults = UserDefaults.standard
+    if let savedData = try? JSONEncoder().encode(itemArray) {
+        userdefaults.set(savedData, forKey: "todoItems")
+    }
+    self.tableView.reloadData()
+}
+```
+
+---
+
+### 2. 📦 Decodable
+Converts **JSON data back into Swift objects**.
+
+Commonly used with:
+- `JSONDecoder()`  
+- `PropertyListDecoder()`
+
+### 🔹 Example — Decode (JSON → Swift)
+
+```swift
+func getData() {
+    let userdefaults = UserDefaults.standard
+    if let savedData = userdefaults.data(forKey: "todoItems") {
+        itemArray = try! JSONDecoder().decode([Item].self, from: savedData)
+    }
+    self.tableView.reloadData()
+}
+```
+
+---
+
+## 🎵 Real-Time Analogy
+
+| Action | Example | Meaning |
+|---------|----------|----------|
+| Encode | Music → CD | Convert data into storable form |
+| Decode | CD → Music | Convert stored data back into usable form |
+
+---
+
+## 🌍 Real-Time Uses of Codable
+
+- API communication (JSON request & response)
+- Saving app data to **UserDefaults**
+- Persisting objects in **files**
+- Encoding/decoding settings or user info
+
+---
+
+## 💻 Practical Example
+
+```swift
+struct User: Codable {
+    let name: String
+    let age: Int
+}
+
+// Encode (Swift → JSON)
+let user = User(name: "John", age: 25)
+if let jsonData = try? JSONEncoder().encode(user) {
+    print(String(data: jsonData, encoding: .utf8)!)
+    // Output: {"name":"John","age":25}
+}
+
+// Decode (JSON → Swift)
+let json = """ {"name":"John","age":25} """.data(using: .utf8)! 
+if let decodedUser = try? JSONDecoder().decode(User.self, from: json) { print(decodedUser.name) // Output: John 
+}
+```
 
 ---
 # 🧩 Clean Architecture, MVP, VIPER, and Singleton in Swift
