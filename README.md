@@ -2128,50 +2128,143 @@ func testAsyncCall() {
 
 ## 8. What are test doubles? Explain mocks, stubs, and fakes.
 
+# 🧩 Test Doubles in Unit Testing (Simplified Guide)
+
 **Test doubles** are objects that stand in for real objects in tests.  
 They simulate or control behavior in a predictable way.
 
-### Mocks — Verify interactions
+When testing, sometimes you don’t want to use real services (like APIs, databases, or payment systems).  
+So you make **“fake” versions** of them — these are called **Test Doubles**.
+
+There are 3 main types: **Stub, Mock, and Fake**
+
+---
+
+## 🧠 1. Stub – Returns a fixed (predefined) value
+
+A **Stub** just gives fake data when your code asks for it.
+
+### Example – Weather App
+
 ```swift
-class MockPaymentService: PaymentService {
-    var sendReceiptCalled = false
-    override func sendReceipt() {
-        sendReceiptCalled = true
+// Real service
+class WeatherService {
+    func getWeather(for city: String) -> String {
+        // Normally it would call a real API
+        return "Fetching from server..."
     }
 }
 
-// In test
-let mockService = MockPaymentService()
-checkout.processPayment(service: mockService)
-XCTAssertTrue(mockService.sendReceiptCalled)
-```
-
-### Stubs — Provide predefined responses
-```swift
+// Stub version
 class WeatherServiceStub: WeatherService {
-    override func fetchWeather(for city: String) -> Weather {
-        return Weather(temperature: 25, condition: "Sunny")
+    override func getWeather(for city: String) -> String {
+        return "Sunny 25°C" // Always returns same fake data
     }
+}
+
+// Test
+func testWeatherDisplay() {
+    let stub = WeatherServiceStub()
+    let weather = stub.getWeather(for: "Mumbai")
+    XCTAssertEqual(weather, "Sunny 25°C")
 }
 ```
 
-### Fakes — Real logic but simpler (in-memory)
+✅ *Stub gives predictable fake output.*
+
+---
+
+## 🧠 2. Mock – Checks if something happened (verifies behavior)
+
+A **Mock** doesn’t give fake data — it records whether a function was called or not.
+
+### Example – Payment Service
+
 ```swift
+// Real service
+class PaymentService {
+    func sendReceipt() { /* Real email sending logic */ }
+}
+
+// Mock version
+class MockPaymentService: PaymentService {
+    var didSendReceipt = false
+
+    override func sendReceipt() {
+        didSendReceipt = true // Mark that function was called
+    }
+}
+
+// Test
+func testSendReceiptCalled() {
+    let mock = MockPaymentService()
+    mock.sendReceipt()
+
+    XCTAssertTrue(mock.didSendReceipt, "Receipt should be sent")
+}
+```
+
+✅ *Mock helps you confirm that a method was called.*
+
+---
+
+## 🧠 3. Fake – Works like real logic but simpler (usually in-memory)
+
+A **Fake** is a simple working version of a real component.  
+It actually stores or retrieves data — but only in memory (not a real database).
+
+### Example – Fake Database
+
+```swift
+// Real Database
+class Database {
+    func save(key: String, value: String) { /* writes to disk */ }
+    func get(key: String) -> String? { nil }
+}
+
+// Fake version
 class FakeDatabase: Database {
     private var storage = [String: String]()
     
     override func save(key: String, value: String) {
         storage[key] = value
     }
-    
+
     override func get(key: String) -> String? {
         return storage[key]
     }
 }
+
+// Test
+func testFakeDatabaseStoresData() {
+    let db = FakeDatabase()
+    db.save(key: "user", value: "Nand")
+    XCTAssertEqual(db.get(key: "user"), "Nand")
+}
 ```
-<img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/383d0651-e63f-4fea-979b-fa97308a5eca" />
+
+✅ *Fake behaves like a real database — but runs fast and doesn’t need setup.*
 
 ---
+
+## 🧩 Summary Table
+
+| Type | Purpose | Example |
+|------|----------|----------|
+| **Stub** | Returns fixed values | Weather always “Sunny” |
+| **Mock** | Checks if method called | `sendReceipt()` called |
+| **Fake** | Simple working logic | In-memory database |
+
+---
+
+🧠 **Tip:**  
+In real projects, test doubles help you isolate your logic and test it **without depending on APIs or databases**.
+
+```
+---
+<img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/fe5f3cc7-f818-47f9-a214-71a0d610e22a" />
+
+
 
 ## 9. What is TDD, and what are its benefits?
 **TDD (Test-Driven Development)** involves writing tests before writing the actual implementation code.  
