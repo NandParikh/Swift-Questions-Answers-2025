@@ -3118,3 +3118,73 @@ Task {
     readable).\
 -   **Combine** is powerful for complex reactive scenarios (but overkill
     for simple async calls).
+
+---
+🧩 Combine Framework – Advantages, Keywords, and Usage
+---
+
+---
+🚀 Advantages of Combine
+---
+Combine provides a declarative, consistent, and type-safe way to handle asynchronous data
+(events, network calls, user input) with less boilerplate and better readability.
+
+Use Combine for reactive programming in Swift — such as binding UI to data, handling network responses,
+form validation, search debounce, and chaining async operations in a clean pipeline.
+
+---
+🧠 Keywords and Usage
+---
+
+• cancellables → A collection that stores subscriptions (AnyCancellable) to keep Combine pipelines alive until explicitly cancelled or deallocated.
+• debounce → Delays publishing values until no new values are received for a specified time interval, useful for reducing rapid updates (e.g., typing).
+• removeDuplicates → Prevents publishing of consecutive duplicate values, ensuring downstream only receives changes.
+• assign(to:) → Automatically assigns published values to a property, keeping the property updated with the latest emitted value.
+• sink → Subscribes to a publisher and allows you to handle received values (and optionally completion events) manually.
+• CombineLatest → Watches both fields together to update validation.
+• Merge → Watches any field individually to reset the login message as soon as typing happens.
+
+---
+🧩 Example 1 – Using CombineLatest
+---
+
+Publishers.CombineLatest($email, $password)
+   .map { email, password in
+       return email.contains("@") && password.count >= 6
+   }
+   .assign(to: &$isValid)
+
+
+$email and $password are published properties from @Published.
+They are publishers that emit a new value whenever email or password changes.
+
+Publishers.CombineLatest takes these two publishers and combines them.
+Every time either email or password changes, it gives the latest values of both.
+
+.map { email, password in ... } checks if the email contains "@" and the password is at least 6 characters.
+It returns true or false.
+
+.assign(to: &$isValid) updates the isValid property automatically with the result of the map.
+So isValid is true only if the email and password are valid.
+
+---
+🧩 Example 2 – Using Merge
+---
+
+Publishers.Merge($email, $password)
+   .sink { [weak self] _ in
+       guard let self = self else { return }
+       self.showMessage = false
+       self.isUserFound = false
+   }
+   .store(in: &cancellables)
+
+
+Publishers.Merge($email, $password) combines the two publishers in a different way:
+it emits a value immediately whenever any one of them changes.
+
+.sink { ... } is the subscriber that reacts to changes. Here, whenever the user types anything in email or password, it:
+
+• Sets showMessage = false → hides the "User Found / Not Found" message.
+• Sets isUserFound = false → resets the login result.
+• .store(in: &cancellables) keeps the subscription alive; without it, the publisher would immediately cancel.    
