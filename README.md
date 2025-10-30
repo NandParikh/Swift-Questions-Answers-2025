@@ -2245,6 +2245,9 @@ func testFakeDatabaseStoresData() {
 
 ✅ *Fake behaves like a real database — but runs fast and doesn’t need setup.*
 
+<img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/f5a91353-71ad-4bf4-8d49-b3b45270df78" />
+
+
 ---
 
 ## 🧩 Summary Table
@@ -2260,13 +2263,10 @@ func testFakeDatabaseStoresData() {
 🧠 **Tip:**  
 In real projects, test doubles help you isolate your logic and test it **without depending on APIs or databases**.
 
-```
 ---
-<img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/fe5f3cc7-f818-47f9-a214-71a0d610e22a" />
-
-
-
 ## 9. What is TDD, and what are its benefits?
+---
+
 **TDD (Test-Driven Development)** involves writing tests before writing the actual implementation code.  
 
 **Cycle:** Red → Green → Refactor
