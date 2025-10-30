@@ -641,6 +641,120 @@ let forced = name!
 📘 **Summary:**  
 Optionals make Swift safer and more predictable by handling `nil` values gracefully — preventing runtime crashes.
 
+
+# 🧠 Swift Properties Explained — Stored, Computed & Lazy
+
+---
+What is Stored Properties, Computed Properties, Lazy stored properties?
+---
+
+## 📦 Stored Properties
+Stored properties **store actual values** for a constant or variable.
+
+### 🔹 Example
+
+```swift
+let pizzaInInches = 12   // Constant stored property
+var numberOfSlices = 5   // Variable stored property
+```
+
+- `let` → constant (cannot be changed)
+- `var` → mutable (can change value)
+
+---
+
+## ⚙️ Computed Properties
+Computed properties **don’t store values** — instead, they **calculate** them each time you access them.
+
+### 🔹 Example 1 (Getter Only)
+
+```swift
+let pizzaInInches = 12
+
+var numberOfSlices: Int {
+    return pizzaInInches - 4
+}
+
+print(numberOfSlices) // Output: 8
+```
+
+### 🔹 Example 2 (Getter & Setter)
+
+```swift
+let pizzaInInches = 12
+
+var numberOfSlices: Int {
+    get {
+        return pizzaInInches - 4
+    }
+    set {
+        print("New value is \(newValue)")
+    }
+}
+
+print(numberOfSlices)  // Output: 8
+numberOfSlices = 10    // Output: "New value is 10"
+```
+
+### 🧠 Notes
+- Must be declared with `var` (cannot use `let`)
+- Must have a **return type**
+- Acts as **getter/setter**
+- **`newValue`** gives access to the updated value inside setter
+- Can replace small functions
+- Reduces lines of code
+
+---
+
+## 💤 Lazy Stored Properties
+A **lazy stored property** delays its initialization until the first time it’s used.  
+This is useful when:
+- Initialization is **expensive**
+- The value **may not always be needed**
+- You want to save **memory and performance**
+
+### 🔹 Example
+
+```swift
+lazy var persistentContainer: NSPersistentContainer = {
+    let container = NSPersistentContainer(name: "DataModel")
+    container.loadPersistentStores { (storeDescription, error) in
+        if let error = error as NSError? {
+            fatalError("Unresolved error \(error), \(error.userInfo)")
+        }
+    }
+    return container
+}()
+```
+
+### 🧠 Notes
+- Initialized **only when accessed**
+- Must be declared with **var**
+- Cannot be used with **let**
+- Provides **memory benefit**
+
+---
+
+## ⚖️ Difference Between Lazy & Computed Properties
+
+| Feature | Lazy Property | Computed Property |
+|----------|----------------|------------------|
+| Stores Value | ✅ Yes (stored value) | ❌ No (calculated on access) |
+| When Loaded | When accessed first time | Every time it’s accessed |
+| Memory Benefit | ✅ Yes | ❌ No |
+| Declaration | Must be `var` | Must be `var` |
+| Use Case | Expensive setup (e.g., Core Data, networking) | Lightweight calculations |
+
+---
+
+✅ **Summary**
+- **Stored** → holds value  
+- **Computed** → calculates value  
+- **Lazy** → stores value but initializes later  
+
+Each serves a specific purpose for optimizing your app’s performance and readability.
+
+
 ---
 ### What are property wrappers?
 
