@@ -3777,3 +3777,199 @@ When the user types in either field:
 | sink | Subscriber to handle values manually |
 
 ---
+
+
+# 💉 Dependency Injection in Swift
+
+## 🧠 What Is Dependency Injection?
+
+**Dependency Injection (DI)** is a design pattern used to **provide dependencies (objects or data) from outside a class**, rather than creating them inside it.
+
+This helps in writing **clean, modular, and testable code**.
+
+### 🎯 Example Concept
+Instead of doing this:
+```swift
+class UserManager {
+    let logger = Logger() // ❌ tightly coupled
+}
+```
+We do this:
+```swift
+class UserManager {
+    let logger: Logger
+    init(logger: Logger) {  // ✅ dependency injected
+        self.logger = logger
+    }
+}
+```
+
+---
+
+## ⚙️ Why Use Dependency Injection?
+
+### ✅ Advantages
+- Makes code **modular** and **testable**  
+- **Reduces coupling** between classes  
+- **Easier to pass data** and reuse components  
+- **Improves maintainability** — easier to modify dependencies  
+- Helps in **unit testing** (you can inject mock objects)
+
+### ❌ Disadvantages
+- Can lead to **unwanted data passing** if not structured properly  
+- Slightly **complex setup** for small apps  
+- Requires **good design understanding** to avoid confusion  
+- If used excessively, may make debugging harder
+
+---
+## 🧩 Types of Dependency Injection
+---
+
+| Concept | Description |
+|----------|--------------|
+| **Dependency Injection** | Providing dependencies from outside the class |
+| **Constructor Injection** | Pass dependency in initializer |
+| **Property Injection** | Assign dependency later |
+| **Method Injection** | Pass dependency in function |
+| **Goal** | Reduce coupling, increase reusability |
+
+If you use **SwiftUI**, property wrappers like `@EnvironmentObject` and `@ObservedObject` are also forms of **dependency injection** — SwiftUI injects dependencies automatically into your views.
+> “Dependency Injection doesn’t mean less code — it means **better-organized code**.”
+
+### 💬 Real-Life Example
+Imagine a **PaymentViewModel** needing a **NetworkService**:
+```swift
+class NetworkService {
+    func fetchData() { print("Fetching data...") }
+}
+
+class PaymentViewModel {
+    let network: NetworkService
+    init(network: NetworkService) { self.network = network }
+}
+
+let service = NetworkService()
+let viewModel = PaymentViewModel(network: service)
+viewModel.network.fetchData()
+```
+
+✅ Clean  
+✅ Testable  
+✅ No hidden dependencies  
+
+---
+
+### 1️⃣ Constructor / Initializer Injection
+
+- The dependency is **required** when creating the object.
+- It ensures the object always has what it needs.
+
+```swift
+class Logger {
+    func log(_ msg: String) {
+        print(msg)
+    }
+}
+
+// Constructor Injection
+class ClassA {
+    let logger: Logger
+    
+    init(logger: Logger) {
+        self.logger = logger
+    }
+}
+
+// Usage
+let log = Logger()
+let a1 = ClassA(logger: log)
+a1.logger.log("Constructor Injection")
+```
+
+✅ **Advantages**
+- Strong dependency contract (must be provided)
+- Avoids nil dependencies
+- Great for unit testing
+
+❌ **Disadvantage**
+- If many dependencies exist, constructor can become long
+
+---
+
+### 2️⃣ Property Injection
+
+- The dependency is **optional** and can be set **after initialization**.
+- Often used when the dependency is not available at creation time.
+
+```swift
+class Logger {
+    func log(_ msg: String) {
+        print(msg)
+    }
+}
+
+class ClassA {
+    var logger: Logger?
+}
+
+// Usage
+let log = Logger()
+let a2 = ClassA()
+a2.logger = log
+a2.logger?.log("Property Injection")
+```
+
+✅ **Advantages**
+- More flexible  
+- Good when dependency is optional  
+
+❌ **Disadvantages**
+- Dependency might not be set (possible runtime crash)
+
+---
+
+### 3️⃣ Method Injection
+
+- The dependency is **passed as a parameter** to the method when needed.
+- Useful when only one method requires that dependency.
+
+```swift
+class Logger {
+    func log(_ msg: String) {
+        print(msg)
+    }
+}
+
+class ClassA {
+    func performAction(logger: Logger) {
+        logger.log("Method Injection")
+    }
+}
+
+// Usage
+let log = Logger()
+let a3 = ClassA()
+a3.performAction(logger: log)
+```
+
+✅ **Advantages**
+- Ideal for short-lived dependencies
+- Reduces memory usage
+- Good for functional-style code
+
+❌ **Disadvantages**
+- Repetitive passing if used in multiple methods
+
+
+## 🧩 When to Use Which?
+
+| Type | Use When | Dependency Lifetime |
+|------|-----------|---------------------|
+| **Constructor Injection** | Always required | Long-term |
+| **Property Injection** | Optional or late binding | Medium-term |
+| **Method Injection** | Needed temporarily | Short-term |
+
+
+
+
+
